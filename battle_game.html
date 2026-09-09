@@ -564,6 +564,8 @@ function cloneFighter(c,side,index=0){
   guard:0,
   nextP:1,
   nextM:1,
+  growthP:1,
+  growthM:1,
   mentalTakenMul:1,
   gundam:false,
   rampage:0,
@@ -996,30 +998,11 @@ function beginTurn(){
   }
 
   if(
-   f.traits.includes('むげん成長')
-  ){
-   f.maxHp=
-    Math.round(f.maxHp*1.1);
-
-   f.hp=
-    Math.round(f.hp*1.1);
-
-   f.maxMental=
-    Math.round(f.maxMental*1.1);
-
-   f.mental=
-    Math.round(f.mental*1.1);
-
-   f.maxMp=
-    Math.round(f.maxMp*1.1);
-
-   f.mp=
-    Math.round(f.mp*1.1);
-
-   if(b.turn%2===0){
-    f.maxMp+=1;
-   }
-  }
+ f.traits.includes('むげん成長')
+){
+ f.growthP*=1.1;
+ f.growthM*=1.1;
+}
 
   if(f.verbalDot>0){
    directDamage(
@@ -2128,6 +2111,7 @@ function applyDamage(src,t,m){
  if(p){
 
   p*=src.nextP;
+  p*=src.growthP;
 
   if(
    src.traits.includes('うんどうおんち')
@@ -2206,6 +2190,7 @@ function applyDamage(src,t,m){
  if(q){
 
   q*=src.nextM;
+  q*=src.growthM;
 
   if(
    src.traits.includes('ふきんしん')
