@@ -122,6 +122,7 @@ const commonMoves={
  'わるだくみ':{mp:1,buffMentalNext:1.2},
  'やすむ':{mp:1,healHp:10,healMental:10},
  '防御':{guard:10,priorityGuard:true},
+ 'よける':{mp:3,special:'dodge'},
  'スキップ':{special:'skip'}
 };
 
@@ -562,6 +563,7 @@ function cloneFighter(c,side,index=0){
   index,
   alive:true,
   guard:0,
+  dodging:false,
   nextP:1,
   nextM:1,
   growthP:1,
@@ -1469,6 +1471,10 @@ function runTurn(player){
    const m=
     x.f.moves[x.a.name];
 
+   if(m?.special==='dodge'){
+    x.f.dodging=true;
+   }
+
    if(m?.priorityGuard){
     x.f.guard=
      m.guard||10;
@@ -2090,6 +2096,15 @@ function applyDamage(src,t,m){
   return;
  }
 
+if(
+  t.dodging &&
+  (m.physical || m.mental)
+ ){
+  log(`${t.name}は攻撃をよけた`);
+  return;
+ }
+
+
  if(
   (
    t.traits.includes('えんきんほう') ||
@@ -2503,6 +2518,7 @@ function endTurn(){
   }
 
   f.guard=0;
+  f.dodging=false;
   f.nextP=1;
   f.nextM=1;
  }
