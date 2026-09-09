@@ -121,7 +121,8 @@ const commonMoves={
  'わるぐち':{mental:5},
  'わるだくみ':{mp:1,buffMentalNext:1.2},
  'やすむ':{mp:1,healHp:10,healMental:10},
- '防御':{guard:10,priorityGuard:true}
+ '防御':{guard:10,priorityGuard:true},
+ 'スキップ':{special:'skip'}
 };
 
 const moveBook={
@@ -1345,6 +1346,21 @@ function playerSwitch(i){
 }
 
 function playerAct(name){
+
+ if(name==='スキップ'){
+
+  if(appState.connection==='friend'){
+   submitOnlineAction({
+    type:'none'
+   });
+  }else{
+   runTurn({
+    type:'none'
+   });
+  }
+
+  return;
+ }
 
  if(appState.connection==='friend'){
   submitOnlineAction({
