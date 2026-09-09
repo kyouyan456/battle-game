@@ -1615,7 +1615,34 @@ function executeAction(f,a,targets){
   `${f.name}の「${n}」`
  );
 
- sfx(360,.045);
+ sfx(360,.045);// あばれうま中：1/3で自分を攻撃
+if(
+  f.rampage>0 &&
+  Math.random()<1/3 &&
+  (m.physical || m.multi)
+){
+  log(`${f.name}は暴走して自分を攻撃した！`);
+
+  if(m.multi){
+    for(const hit of m.multi){
+      directDamage(
+        f,
+        Math.round(hit * f.nextP),
+        0,
+        'あばれうま自傷'
+      );
+    }
+  }else{
+    directDamage(
+      f,
+      Math.round((m.physical || 0) * f.nextP),
+      0,
+      'あばれうま自傷'
+    );
+  }
+
+  return;
+}
 
  if(m.special==='copy'){
 
@@ -1687,10 +1714,11 @@ function executeMoveEffect(f,n,m,targets){
   return;
  }
 
- if(m.special==='rampage'){
-  f.rampage=3;
+if(m.special==='rampage'){
+  f.rampage=4;
+  log(`${f.name}は暴れ始めた！ 次のターンから3ターン物理攻撃が2倍になる`);
   return;
- }
+}
 
  if(m.special==='mentalResistStack'){
   f.mentalResistStacks=
@@ -2322,7 +2350,7 @@ function applyDamage(src,t,m){
  if(
   t.traits.includes('しきもう') &&
   p &&
-  Math.random()<P.normal
+  'あばれうま反動()<P.normal
  ){
   p*=1.2;
  }
@@ -2363,18 +2391,6 @@ function applyDamage(src,t,m){
    :'flash'
  );
 
- if(
-  src.rampage>0 &&
-  p>0 &&
-  Math.random()<P.normal
- ){
-  directDamage(
-   src,
-   Math.round(p*.5),
-   0,
-   'あばれうま反動'
-  );
- }
 
  if(
   src.traits.includes('かりめん') &&
