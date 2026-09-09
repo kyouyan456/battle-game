@@ -1628,7 +1628,7 @@ if(
     for(const hit of m.multi){
       directDamage(
         f,
-        Math.round(hit * f.nextP),
+        Math.round(hit * f.nextP* 0.5),
         0,
         'あばれうま自傷'
       );
@@ -1636,7 +1636,7 @@ if(
   }else{
     directDamage(
       f,
-      Math.round((m.physical || 0) * f.nextP),
+      Math.round((m.physical || 0) * f.nextP * 0.5),
       0,
       'あばれうま自傷'
     );
