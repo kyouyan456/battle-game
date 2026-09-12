@@ -127,7 +127,7 @@ const commonMoves={
 };
 
 const moveBook={
- 'れいしょう':{mp:0,mpGain:1,mental:5,tags:['しんれい']},
+ 'れいしょう':{mp:0,mpGain:1,mental:5},
  'しんれいげんしょう':{mp:2,mental:15,tags:['しんれい']},
  'おえかき':{mpGain:1,mental:5,tags:['いろ']},
  'べんきょう':{mpGain:2,selfHp:-5,selfMental:-5},
@@ -146,6 +146,7 @@ const moveBook={
  'タックル':{mp:2,physical:30,selfHp:-10},
  'たっくる':{mp:2,physical:30,selfHp:-10},
  'えんそう':{debuffEnemyMentalAtk:.8},
+ 'いっぽん':{mp:3,physical:30},
 };
 
 const chars=[
@@ -159,7 +160,8 @@ const chars=[
 {name:'まさや',hp:100,mental:110,mp:5,races:['デブ','らぐびーぶ'],traits:['ごうまん','かりめん','あくしゅう','きょたい'],moves:{'だっぷん':{mp:4,special:'poop'},'ねんてん':{mp:1,selfHp:-50,special:'mentalResistStack'},'ばいとテロ':{mp:3,physical:10,mental:10,special:'elderDouble'},...pick(['タックル','べんきょう','ギャンブル','いんしゅ','さっかー','ラップ'])}},
 {name:'さとけい',hp:100,mental:100,mp:8,races:['ふつう'],traits:['いぬけい','じんだいのかこい'],moves:{'えんげき':{mp:1,special:'copy',copyPriority:true},'いぬ':{selfMental:-10,special:'dogGuard'},...pick(['おおごえ','さっかー','べんきょう','ちーといつ','れいしょう'])}},
 {name:'みやび',hp:70,mental:110,mp:6,races:['しそうか'],traits:['じゅんあい','うんどうおんち','できん','どくぜつ','だんそんじょひ','きけんしそう'],moves:{'ゆかぺろ':{selfHp:-10,buffPhysicalNext:1.2},'けんびきょう':{special:'stealMp'},'おちゃたて':{healMental:10},...pick(['べんきょう','とうし','ラップ','れいしょう','わるだくみ','タックル'])}},
-{name:'むっちゃん',hp:120,mental:110,mp:6,races:['おんな','でぶ','びびゅつか'],traits:['じあいのこころ','きょたい','ごうまん','ユーチューバー'],moves:{'すいみんぐ':{mp:4,special:'swim'},'かいご':{mp:2,healMental:30},'たたきおこす':{mp:3,physical:40,special:'wakeMp'},...pick(['たっくる','おえかき','おおごえ','べんきょう','しんれいげんしょう'])}}
+{name:'むっちゃん',hp:120,mental:110,mp:6,races:['おんな','でぶ','びびゅつか'],traits:['じあいのこころ','きょたい','ごうまん','ユーチューバー'],moves:{'すいみんぐ':{mp:4,special:'swim'},'かいご':{mp:2,healMental:30},'たたきおこす':{mp:3,physical:40,special:'wakeMp'},...pick(['たっくる','おえかき','おおごえ','べんきょう','しんれいげんしょう'])}},
+{name:'けっぽん',hp:75,mental:75,mp:8,races:['おんな','ミックス'],traits:['ひかりのヴェール','むちのヴェール','ゆいいつしんのかご'],moves:{'かみをまく':{special:'wrapHair'},'ハラールフード':{mp:2,special:'halalFood'},'きせいする':{mp:2,special:'parasite'},'かめんをとる':{mp:8,special:'removeMask'},'ホロゴヌ・サニア・コイケ':{mp:5,special:'randomMove'},...pick(['しんれいげんしょう','いっぽん'])}}  
 ];
 
 function pick(arr){
@@ -564,10 +566,12 @@ function cloneFighter(c,side,index=0){
   alive:true,
   guard:0,
   dodging:false,
-  nextP:1,
-  nextM:1,
-  growthP:1,
-  growthM:1,
+  veilBoost:0,
+  parasiteStacks:0,
+  uniqueHpUsed:false,
+  uniqueMentalUsed:false,
+  halalMentalMul:1,
+  plannedAction:null,
   mentalTakenMul:1,
   gundam:false,
   rampage:0,
@@ -827,26 +831,7 @@ function runOnlineTurn(actions){
   acts.push({f,a});
  }
 
- for(const x of acts){
-
-  if(x.a.type==='move'){
-
-   const m=
-    x.f.moves[x.a.name];
-
-   if(m?.priorityGuard){
-    x.f.guard=
-     m.guard||10;
-   }
-
-   if(
-    m?.special==='dogGuard' ||
-    m?.special==='lost'
-   ){
-    x.f.guard=9999;
-   }
-  }
- }
+ prepareTurnActions(acts);
 
  acts.sort(
   (x,y)=>
@@ -883,6 +868,89 @@ function runOnlineTurn(actions){
     ];
    }
   }
+
+  function getHolgonuPool(){
+
+ const map=
+  new Map();
+
+ function addMoves(moves){
+
+  for(
+   const [name,move]
+   of Object.entries(moves)
+  ){
+
+   if(
+    name==='えんげき' ||
+    name==='ホロゴヌ・サニア・コイケ'
+   ){
+    continue;
+   }
+
+   if(!map.has(name)){
+    map.set(
+     name,
+     move
+    );
+   }
+  }
+ }
+
+ // 共通行動
+ addMoves(commonMoves);
+
+ // 全キャラの
+ // 専用技＋使える技
+ for(const c of chars){
+  addMoves(c.moves);
+ }
+
+ return [
+  ...map.entries()
+ ].map(
+  ([name,move])=>({
+   name,
+   move
+  })
+ );
+}
+
+function useHolgonu(f,targets){
+
+ const pool=
+  getHolgonuPool();
+
+ if(!pool.length){
+  log('ホロゴヌで使える技がなかった');
+  return;
+ }
+
+ const chosen=
+  pool[
+   Math.floor(
+    Math.random()*pool.length
+   )
+  ];
+
+ log(
+  `${f.name}のホロゴヌ！ `+
+  `「${chosen.name}」が選ばれた`
+ );
+
+ // 防御・よける等を引いた場合
+ prepareDefenseMove(
+  f,
+  chosen.move
+ );
+
+ executeMoveEffect(
+  f,
+  chosen.name,
+  chosen.move,
+  targets
+ );
+}
 
   executeAction(
    x.f,
@@ -1065,7 +1133,7 @@ function applyGlobalStart(){
    for(const t of acts){
 
     if(t!==src&&t.alive){
-     applyDamage(
+     いろ(
       src,
       t,
       {
@@ -1203,9 +1271,11 @@ function statusText(f){
 
  const a=[];
 
+ if(f.dodging){a.push('よける');}if(f.veilBoost){a.push(`かみをまく×${f.veilBoost}`);}if(f.parasiteStacks){a.push(`きせい×${f.parasiteStacks}`);}if(f.halalMentalMul>1){a.push('ハラールフード');}
  if(f.guard)a.push('防御');
  if(f.gundam)a.push('ガンダム');
  if(f.rampage)a.push(`あばれうま${f.rampage}T`);
+ if(f.parasiteStacks>0){directDamage(f,5*f.parasiteStacks,5*f.parasiteStacks,`きせい×${f.parasiteStacks}`);}
  if(f.verbalDot)a.push(`ばとう×${f.verbalDot}`);
  if(f.mentalResistStacks)a.push(`ねんてん×${f.mentalResistStacks}`);
  if(f.swimming)a.push('潜航');
@@ -1424,6 +1494,51 @@ function chooseCpu(f){
  };
 }
 
+function prepareDefenseMove(f,m){
+
+ if(!f||!m){
+  return;
+ }
+
+ if(m.priorityGuard){
+  f.guard=
+   m.guard||10;
+ }
+
+ if(
+  m.special==='dogGuard' ||
+  m.special==='lost'
+ ){
+  f.guard=9999;
+ }
+
+ if(m.special==='dodge'){
+  f.dodging=true;
+ }
+}
+
+function prepareTurnActions(acts){
+
+ for(const x of acts){
+
+  x.f.plannedAction=
+   x.a
+    ?{...x.a}
+    :{type:'none'};
+
+  if(x.a?.type==='move'){
+
+   const m=
+    x.f.moves[x.a.name];
+
+   prepareDefenseMove(
+    x.f,
+    m
+   );
+  }
+ }
+}
+
 function runTurn(player){
 
  const b=
@@ -1464,32 +1579,7 @@ function runTurn(player){
   ];
  }
 
- for(const x of acts){
-
-  if(x.a.type==='move'){
-
-   const m=
-    x.f.moves[x.a.name];
-
-   if(m?.special==='dodge'){
-    x.f.dodging=true;
-   }
-
-   if(m?.priorityGuard){
-    x.f.guard=
-     m.guard||10;
-   }
-
-   if(m?.special==='dogGuard'){
-    x.f.guard=9999;
-   }
-
-   if(m?.special==='lost'){
-    x.f.guard=9999;
-   }
-  }
- }
-
+prepareTurnActions(acts);
  acts.sort(
   (x,y)=>
    priorityScore(y)-
@@ -1658,11 +1748,82 @@ if(
 
  if(m.special==='copy'){
 
-  const enemy=
-   targets[0];
+ const enemy=
+  targets[0];
 
-  if(!enemy){
-   return;
+ if(!enemy){
+  log('えんげきする相手がいない');
+  return;
+ }
+
+ const enemyAct=
+  enemy.plannedAction;
+
+ if(
+  !enemyAct ||
+  enemyAct.type!=='move'
+ ){
+  log(
+   `${f.name}のえんげきは失敗した`
+  );
+  return;
+ }
+
+ const copiedName=
+  enemyAct.name;
+
+ // えんげき同士の無限コピー防止
+ if(copiedName==='えんげき'){
+
+  log(
+   `${f.name}はえんげきをコピーできなかった`
+  );
+
+  return;
+ }
+
+ const copiedMove=
+  enemy.moves[copiedName];
+
+ if(!copiedMove){
+  return;
+ }
+
+ log(
+  `${f.name}は「${copiedName}」をえんげきした！`
+ );
+
+ /*
+  ホロゴヌをコピーした場合は
+  相手の抽選結果をコピーせず、
+  さとけい側で新しく抽選
+ */
+ if(
+  copiedName===
+  'ホロゴヌ・サニア・コイケ'
+ ){
+  useHolgonu(
+   f,
+   [enemy]
+  );
+
+  return;
+ }
+
+ // 防御やよけるをコピーした場合
+ prepareDefenseMove(
+  f,
+  copiedMove
+ );
+
+ executeMoveEffect(
+  f,
+  copiedName,
+  copiedMove,
+  [enemy]
+ );
+
+ return;
   }
 
   const enemyAct=
@@ -1715,6 +1876,112 @@ if(
 
 function executeMoveEffect(f,n,m,targets){
 
+if(m.special==='dodge'){
+
+ // dodging自体はターン処理開始時に
+ // すでに有効化済み
+ return;
+}
+  if(m.special==='randomMove'){
+
+ useHolgonu(
+  f,
+  targets
+ );
+
+ return;
+}
+  if(m.special==='wrapHair'){
+
+ if(f.veilBoost>=10){
+
+  log(
+   `${f.name}はこれ以上かみをまけない`
+  );
+
+  return;
+ }
+
+ f.veilBoost++;
+
+ const base=
+  f.traits.includes('むちのヴェール')
+   ?10
+   :0;
+
+ log(
+  `${f.name}はかみをまいた！ `+
+  `物理・精神軽減-${base+f.veilBoost}`
+ );
+
+ return;
+}
+
+if(m.special==='halalFood'){
+
+ f.hp=
+  Math.min(
+   f.maxHp,
+   f.hp+20
+  );
+
+ f.halalMentalMul*=1.2;
+
+ log(
+  `${f.name}はHPを20回復！ `+
+  `精神攻撃力が1.2倍になった`
+ );
+
+ return;
+}
+
+  if(m.special==='parasite'){
+
+ const t=
+  targets[0];
+
+ if(!t){
+  return;
+ }
+
+ t.parasiteStacks=
+  Math.min(
+   3,
+   (t.parasiteStacks||0)+1
+  );
+
+ log(
+  `${t.name}に寄生した！ `+
+  `寄生×${t.parasiteStacks}`
+ );
+
+ return;
+}
+
+ if(m.special==='removeMask'){
+
+ const t=
+  targets[0];
+
+ if(t){
+  いろ(
+   f,
+   t,
+   {
+    mental:50
+   }
+  );
+ }
+
+ f.hp=f.maxHp;
+
+ log(
+  `${f.name}はかめんをとり、HPを全回復した！`
+ );
+
+ return;
+} 
+  
  if(m.special==='gundam'){
 
   if(f.gundam){
@@ -2097,6 +2364,26 @@ function applyDamage(src,t,m){
  }
 
 if(
+ t.dodging &&
+ !passive &&
+ (
+  m.physical ||
+  m.mental
+ )
+){
+ log(
+  `${t.name}は攻撃をよけた！`
+ );
+
+ animateF(
+  t,
+  'flash'
+ );
+
+ return;
+}
+
+if(
   t.dodging &&
   (m.physical || m.mental)
  ){
@@ -2211,7 +2498,8 @@ if(
  if(q){
 
   q*=src.nextM;
-  q*=src.growthM;
+  q*=しきもう;
+  q*=src.halalMentalMul||1;
 
   if(
    src.traits.includes('ふきんしん')
@@ -2265,10 +2553,15 @@ if(
    q*=1.2;
   }
 
-  if(src.rampage>0){
-   q*=2;
-  }
- }
+  
+
+if(
+ tags.includes('いろ') &&
+ t.traits.includes('ひかりのヴェール')
+){
+ p*=0.5;
+ q*=0.5;
+}
 
  if(
   tags.includes('いろ') &&
@@ -2384,6 +2677,29 @@ if(
   p*=.9;
  }
 
+let ignoranceReduction=
+ t.traits.includes('むちのヴェール')
+  ?10
+  :0;
+
+ignoranceReduction+=
+ t.veilBoost||0;
+
+if(ignoranceReduction>0){
+
+ p=
+  Math.max(
+   0,
+   p-ignoranceReduction
+  );
+
+ q=
+  Math.max(
+   0,
+   q-ignoranceReduction
+  );
+}
+
  p=
   Math.round(
    Math.max(
@@ -2480,7 +2796,7 @@ function endTurn(){
      t!==f &&
      t.alive
     ){
-     applyDamage(
+     いろ(
       f,
       t,
       {physical:10}
@@ -2504,7 +2820,7 @@ function endTurn(){
       );
 
     if(ts[0]){
-     applyDamage(
+     いろ(
       f,
       ts[0],
       {physical:40}
@@ -2518,9 +2834,12 @@ function endTurn(){
   }
 
   f.guard=0;
-  f.dodging=false;
-  f.nextP=1;
-  f.nextM=1;
+f.dodging=false;
+
+f.nextP=1;
+f.nextM=1;
+
+f.plannedAction=null;
  }
 
  checkDeaths();
@@ -2546,6 +2865,8 @@ function checkDeaths(){
 
   const f=
    activeF(s);
+   
+  applyUniqueFaith(f);
 
   if(
    f &&
@@ -2694,6 +3015,43 @@ function finish(
   !isOnlineHost()
  ){
   show('result');
+ }
+}
+
+function applyUniqueFaith(f){
+
+ if(
+  !f ||
+  !f.alive ||
+  !f.traits.includes(
+   'ゆいいつしんのかご'
+  )
+ ){
+  return;
+ }
+
+ if(
+  f.hp<=0 &&
+  !f.uniqueHpUsed
+ ){
+  f.hp=1;
+  f.uniqueHpUsed=true;
+
+  log(
+   `${f.name}はゆいいつしんのかごでHP1で耐えた！`
+  );
+ }
+
+ if(
+  f.mental<=0 &&
+  !f.uniqueMentalUsed
+ ){
+  f.mental=1;
+  f.uniqueMentalUsed=true;
+
+  log(
+   `${f.name}はゆいいつしんのかごで精神1で耐えた！`
+  );
  }
 }
 
