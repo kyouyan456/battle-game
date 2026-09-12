@@ -881,91 +881,7 @@ function runOnlineTurn(actions){
     ];
    }
   }
-
  
-
- // 防御・よける等を引いた場合
-
- function getHolgonuPool(){
-
- const map=
-  new Map();
-
- function addMoves(moves){
-
-  for(
-   const [name,move]
-   of Object.entries(moves)
-  ){
-
-   if(
-    name==='えんげき' ||
-    name==='ホロゴヌ・サニア・コイケ'
-   ){
-    continue;
-   }
-
-   if(!map.has(name)){
-    map.set(
-     name,
-     move
-    );
-   }
-  }
- }
-
- // 共通行動
- addMoves(commonMoves);
-
- // 全キャラの
- // 専用技＋使える技
- for(const c of chars){
-  addMoves(c.moves);
- }
-
- return [
-  ...map.entries()
- ].map(
-  ([name,move])=>({
-   name,
-   move
-  })
- );
-}
-
-function useHolgonu(f,targets){
-
- const pool=
-  getHolgonuPool();
-
- if(!pool.length){
-  log('ホロゴヌで使える技がなかった');
-  return;
- }
-
- const chosen=
-  pool[
-   Math.floor(
-    Math.random()*pool.length
-   )
-  ];
-
- log(
-  `${f.name}のホロゴヌ！ `+
-  `「${chosen.name}」が選ばれた`
- );
- prepareDefenseMove(
-  f,
-  chosen.move
- );
-
- executeMoveEffect(
-  f,
-  chosen.name,
-  chosen.move,
-  targets
- );
-}
 
   executeAction(
    x.f,
@@ -1295,7 +1211,7 @@ function statusText(f){
 
  const a=[];
 
- if(f.dodging){a.push('よける');}if(f.veilBoost){a.push(`かみをまく×${f.veilBoost}`);}if(f.parasiteStacks){a.push(`きせい×${f.parasiteStacks}`);}if(f.halalMentalMul>1){a.push('ハラールフード');}
+ if(f.dodging){a.push('よける');}if(f.veilBoost){a.push(`かみをまく×${f.veilBoost}`);}if(f.halalMentalMul>1){a.push('ハラールフード');}
  if(f.guard)a.push('防御');
  if(f.gundam)a.push('ガンダム');
  if(f.rampage)a.push(`あばれうま${f.rampage}T`);
@@ -1520,7 +1436,86 @@ function chooseCpu(f){
    ][0]
  };
 }
+function getHolgonuPool(){
 
+ const map=
+  new Map();
+
+ function addMoves(moves){
+
+  for(
+   const [name,move]
+   of Object.entries(moves)
+  ){
+
+   if(
+    name==='えんげき' ||
+    name==='ホロゴヌ・サニア・コイケ'
+   ){
+    continue;
+   }
+
+   if(!map.has(name)){
+    map.set(
+     name,
+     move
+    );
+   }
+  }
+ }
+
+ // 共通行動
+ addMoves(commonMoves);
+
+ // 全キャラの
+ // 専用技＋使える技
+ for(const c of chars){
+  addMoves(c.moves);
+ }
+
+ return [
+  ...map.entries()
+ ].map(
+  ([name,move])=>({
+   name,
+   move
+  })
+ );
+}
+
+function useHolgonu(f,targets){
+
+ const pool=
+  getHolgonuPool();
+
+ if(!pool.length){
+  log('ホロゴヌで使える技がなかった');
+  return;
+ }
+
+ const chosen=
+  pool[
+   Math.floor(
+    Math.random()*pool.length
+   )
+  ];
+
+ log(
+  `${f.name}のホロゴヌ！ `+
+  `「${chosen.name}」が選ばれた`
+ );
+ prepareDefenseMove(
+  f,
+  chosen.move
+ );
+
+ executeMoveEffect(
+  f,
+  chosen.name,
+  chosen.move,
+  targets
+ );
+}
 function prepareDefenseMove(f,m){
 
  if(!f||!m){
@@ -1870,14 +1865,7 @@ function executeAction(f,a,targets){
   targets
  );
 }
- executeMoveEffect(
-  f,
-  n,
-  m,
-  targets,
-  false
- );
-}
+ 
 
 function executeMoveEffect(f,n,m,targets){
 
@@ -1932,10 +1920,10 @@ if(m.special==='halalFood'){
 
  f.halalMentalMul*=1.2;
 
- log(
-  `${f.name}はHPを20回復！ `+
-  `精神攻撃力が1.2倍になった`
- );
+log(
+ `${f.name}はHPを20回復！ `+
+ `精神攻撃力が${f.halalMentalMul.toFixed(2)}倍になった`
+);
 
  return;
 }
