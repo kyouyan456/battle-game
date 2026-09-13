@@ -147,21 +147,23 @@ const moveBook={
  'たっくる':{mp:2,physical:30,selfHp:-10},
  'えんそう':{debuffEnemyMentalAtk:.8},
  'いっぽん':{mp:3,physical:30},
+ 'おうと':{mp:5,mental:50,selfHp:-5,selfMental:-5},
+ 'きせいする':{mp:2,special:'parasite'},
 };
 
 const chars=[
-{name:'KK',hp:70,mental:110,mp:10,races:['びびゅつか','ゆうれいぶいん'],traits:['しきもう','ふきんしん','なぞのこうい','じーぴーえー','うんどうおんち'],moves:{'ガンダム':{mp:8,special:'gundam'},'みつぞうしゅ':{healHp:20},'たけやまバズーカ':{mp:2,physical:20,priority:true},...pick(['れいしょう','わるだくみ','しんれいげんしょう','おえかき','べんきょう','いんしゅ'])}},
+{name:'KK',hp:80,mental:110,mp:10,races:['びびゅつか','ゆうれいぶいん'],traits:['しきもう','ふきんしん','なぞのこうい','じーぴーえー','うんどうおんち'],moves:{'ガンダム':{mp:8,special:'gundam'},'みつぞうしゅ':{healHp:20},'たけやまバズーカ':{mp:2,physical:20,priority:true},...pick(['れいしょう','わるだくみ','しんれいげんしょう','おえかき','べんきょう','いんしゅ'])}},
 {name:'あさと',hp:120,mental:80,mp:8,races:['ひばくしゃ','ろうにんせい'],traits:['おおごえ','無神経','むげん成長','ぼうず','びびり','まゆなし'],moves:{'ピカドンボイス':{mp:8,physical:50,mental:10,selfHp:-10,tags:['おと']},'ろうにんせいかつ':{mp:1,healHp:10,mpGain:3,selfMental:-5},...pick(['からて','おおごえ','れいしょう','たどうしょう','べんきょう'])}},
-{name:'うい',hp:110,mental:110,mp:9,races:['きつえんしゃ'],traits:['うわきしょう','だんそんじょひ','れいしょうけい'],moves:{'うわき':{mp:3,special:'affair'},...pick(['おおごえ','やすむ','からて','れいしょう','たどうしょう','べんきょう','きつえん','いんしゅ','わるだくみ','ちーといつ'])}},
+{name:'うい',hp:110,mental:110,mp:9,races:['きつえんしゃ'],traits:['うわきしょう','だんそんじょひ','れいしょうけい'],moves:{'うわき':{mp:3,special:'affair'},...pick(['あるくTDL','やすむ','からて','れいしょう','たどうしょう','べんきょう','きつえん','いんしゅ','わるだくみ','ちーといつ'])}},
 {name:'みまや',hp:115,mental:95,mp:8,races:['うまづら','きつえんしゃ','たんきだいがく'],traits:['うわきしょう','ギャンブラー','えんきんほう','めめしい'],moves:{'あばれうま':{special:'rampage'},...pick(['たどうしょう','おおごえ','きつえん','いんしゅ','投資','ギャンブル'])}},
 {name:'ゆうま',hp:110,mental:100,mp:7,races:['ろうじん','あるちゅう'],traits:['ボケ','ギャンブラー','しらが','あかいろ','むしば','あるつはいまー'],moves:{'ペンキばくはつ':{mp:3,physical:5,mental:50,tags:['いろ'],allTargets:true},'せいり':{mp:5,special:'seiri'},...pick(['いんしゅ','とうし','ぎゃんぶる','べんきょう','おえかき','さっかー'])}},
-{name:'れんたろう',hp:110,mental:90,mp:6,races:['おんがくか','fラン'],traits:['わがまま','おやのななひかり','くろいろ','じゅんあい'],moves:{'どくそう':{mp:2,physical:10,mental:20,tags:['おと']},'まいご':{special:'lost'},'ついんぶらっく':{mp:1,multi:[10,10],tags:['いろ']},...pick(['たどうしょう','おおごえ','さっかー','えんそう'])}},
+{name:'れんたろう',hp:110,mental:90,mp:6,races:['おんがくか','fラン'],traits:['わがまま','おやのななひかり','くろいろ','じゅんあい'],moves:{'どくそう':{mp:2,physical:10,mental:20,tags:['おと']},'まいご':{special:'lost'},'ついんぶらっく':{mp:1,multi:[10,10],tags:['いろ']},'はるか':{mp:6,special:'haruka'},...pick(['たどうしょう','おおごえ','さっかー','えんそう'])}},
 {name:'まっすー',hp:90,mental:90,mp:9,races:['もじゃもじゃ'],traits:['どくぜつ','びびり','ちゅうそつのいでんし','にじゅうじんかく'],moves:{'きれる':{mp:5,buffPhysicalNext:1.5,buffMentalNext:1.5},'ばとう':{mp:3,special:'verbalDot'},'からみつく':{mp:2,special:'entangle'},...pick(['れいしょう','べんきょう','ギャンブル'])}},
-{name:'まさや',hp:100,mental:110,mp:5,races:['デブ','らぐびーぶ'],traits:['ごうまん','かりめん','あくしゅう','きょたい'],moves:{'だっぷん':{mp:4,special:'poop'},'ねんてん':{mp:1,selfHp:-50,special:'mentalResistStack'},'ばいとテロ':{mp:3,physical:10,mental:10,special:'elderDouble'},...pick(['タックル','べんきょう','ギャンブル','いんしゅ','さっかー','ラップ'])}},
-{name:'さとけい',hp:100,mental:100,mp:8,races:['ふつう'],traits:['いぬけい','じんだいのかこい'],moves:{'えんげき':{mp:1,special:'copy',copyPriority:true},'いぬ':{selfMental:-10,special:'dogGuard'},...pick(['おおごえ','さっかー','べんきょう','ちーといつ','れいしょう'])}},
-{name:'みやび',hp:70,mental:110,mp:6,races:['しそうか'],traits:['じゅんあい','うんどうおんち','できん','どくぜつ','だんそんじょひ','きけんしそう'],moves:{'ゆかぺろ':{selfHp:-10,buffPhysicalNext:1.2},'けんびきょう':{special:'stealMp'},'おちゃたて':{healMental:10},...pick(['べんきょう','とうし','ラップ','れいしょう','わるだくみ','タックル'])}},
+{name:'まさや',hp:150,mental:90,mp:5,races:['デブ','らぐびーぶ'],traits:['ごうまん','かりめん','あくしゅう','きょたい'],moves:{'だっぷん':{mp:4,special:'poop'},'ねんてん':{mp:1,selfHp:-50,special:'mentalResistStack'},'ばいとテロ':{mp:3,physical:10,mental:10,special:'elderDouble'},...pick(['タックル','べんきょう','ギャンブル','いんしゅ','さっかー','ラップ'])}},
+{name:'さとけい',hp:100,mental:100,mp:8,races:['ふつう'],traits:['いぬけい','じんだいのかこい'],moves:{'えんげき':{mp:1,special:'copy',copyPriority:true},'いぬ':{selfMental:-10,special:'dogGuard'},...pick(['おおごえ','さっかー','べんきょう','ちーといつ','れいしょう','おうと'])}},
+{name:'みやび',hp:80,mental:110,mp:6,races:['しそうか'],traits:['じゅんあい','うんどうおんち','できん','どくぜつ','だんそんじょひ','きけんしそう'],moves:{'ゆかぺろ':{selfHp:-10,buffPhysicalNext:1.2},'けんびきょう':{special:'stealMp'},'おちゃたて':{healMental:10},...pick(['べんきょう','とうし','ラップ','れいしょう','わるだくみ','タックル'])}},
 {name:'むっちゃん',hp:120,mental:110,mp:6,races:['おんな','でぶ','びびゅつか'],traits:['じあいのこころ','きょたい','ごうまん','ユーチューバー'],moves:{'すいみんぐ':{mp:4,special:'swim'},'かいご':{mp:2,healMental:30},'たたきおこす':{mp:3,physical:40,special:'wakeMp'},...pick(['たっくる','おえかき','おおごえ','べんきょう','しんれいげんしょう'])}},
-{name:'けっぽん',hp:75,mental:75,mp:8,races:['おんな','ミックス'],traits:['ひかりのヴェール','むちのヴェール','ゆいいつしんのかご'],moves:{'かみをまく':{special:'wrapHair'},'ハラールフード':{mp:2,special:'halalFood'},'きせいする':{mp:2,special:'parasite'},'かめんをとる':{mp:8,special:'removeMask'},'ホロゴヌ・サニア・コイケ':{mp:5,special:'randomMove'},...pick(['しんれいげんしょう','いっぽん'])}}  
+{name:'けっぽん',hp:75,mental:75,mp:8,races:['おんな','ミックス'],traits:['ひかりのヴェール','むちのヴェール','ゆいいつしんのかご'],moves:{'かみをまく':{special:'wrapHair'},'ハラールフード':{mp:3,special:'halalFood'},'かめんをとる':{mp:8,special:'removeMask'},'ホロゴヌ・サニア・コイケ':{mp:5,special:'randomMove'},...pick(['しんれいげんしょう','いっぽん','きせいする'])}}  
 ];
 
 function pick(arr){
@@ -587,6 +589,7 @@ halalMentalMul:1,
 plannedAction:null,
 mentalTakenMul:1,
   gundam:false,
+  haruka:false,
   rampage:0,
   mentalResistStacks:0,
   verbalDot:0,
@@ -981,6 +984,15 @@ function beginTurn(){
     );
   }
 
+   if(f.haruka){
+
+ f.mental=
+  Math.min(
+   f.maxMental,
+   f.mental+5
+  );
+}
+
   if(
    f.traits.includes('ちゅうそつのいでんし') &&
    Math.random()<P.normal
@@ -995,7 +1007,7 @@ function beginTurn(){
   if(
    f.traits.includes('できん')
   ){
-   f.nextM*=1.1;
+   f.mentalBuff*=1.17;
   }
 
  if(
@@ -1214,6 +1226,7 @@ function statusText(f){
  if(f.dodging){a.push('よける');}if(f.veilBoost){a.push(`かみをまく×${f.veilBoost}`);}if(f.halalMentalMul>1){a.push('ハラールフード');}
  if(f.guard)a.push('防御');
  if(f.gundam)a.push('ガンダム');
+ if(f.haruka)a.push('はるか');
  if(f.rampage)a.push(`あばれうま${f.rampage}T`);
 if(f.parasiteStacks){
  a.push(
@@ -1961,7 +1974,7 @@ log(
  f,
  t,
  {
-  mental:50
+  mental:30
  }
 );
  }
@@ -1985,6 +1998,26 @@ log(
 
   return;
  }
+
+  if(m.special==='haruka'){
+
+ if(f.haruka){
+
+  log(
+   'はるかはすでにいる'
+  );
+
+ }else{
+
+  f.haruka=true;
+
+  log(
+   `${f.name}ははるかを設置した！`
+  );
+ }
+
+ return;
+}
 
 if(m.special==='rampage'){
   f.rampage=4;
@@ -2461,7 +2494,7 @@ function applyDamage(
   }
 
   if(
-   src.traits.includes('おおごえ') &&
+   src.traits.includes('あるくTDL') &&
    tags.includes('おと')
   ){
    p*=1.5;
@@ -2477,11 +2510,18 @@ function applyDamage(
    p*=1.2;
   }
 
+   if(
+ src.haruka &&
+ tags.includes('おと')
+){
+ p*=2;
+}
+   
   if(
    src.traits.includes('じゅんあい') &&
    t.traits.includes('うわきしょう')
   ){
-   p*=1.2;
+   p*=1.5;
   }
 
   if(src.rampage>0){
@@ -2536,7 +2576,7 @@ function applyDamage(
    src.traits.includes('じゅんあい') &&
    t.traits.includes('うわきしょう')
   ){
-   q*=1.2;
+   q*=1.5;
   }
 
   if(
@@ -2549,6 +2589,13 @@ function applyDamage(
    q*=1.2;
   }
  }
+
+  if(
+ src.haruka &&
+ tags.includes('おと')
+){
+ q*=2;
+}
 
  if(
   tags.includes('いろ') &&
@@ -2882,6 +2929,10 @@ function checkDeaths(){
    if(f.gundam){
     f.gundam=false;
    }
+
+  if(f.haruka){
+ f.haruka=false;
+}
 
    if(b.mode==='team3'){
 
