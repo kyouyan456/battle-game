@@ -153,15 +153,15 @@ const moveBook={
 
 const chars=[
 {name:'KK',hp:80,mental:110,mp:10,races:['びびゅつか','ゆうれいぶいん'],traits:['しきもう','ふきんしん','なぞのこうい','じーぴーえー','うんどうおんち'],moves:{'ガンダム':{mp:8,special:'gundam'},'みつぞうしゅ':{healHp:20},'たけやまバズーカ':{mp:2,physical:20,priority:true},...pick(['れいしょう','わるだくみ','しんれいげんしょう','おえかき','べんきょう','いんしゅ'])}},
-{name:'あさと',hp:120,mental:80,mp:8,races:['ひばくしゃ','ろうにんせい'],traits:['おおごえ','無神経','むげん成長','ぼうず','びびり','まゆなし'],moves:{'ピカドンボイス':{mp:8,physical:50,mental:10,selfHp:-10,tags:['おと']},'ろうにんせいかつ':{mp:1,healHp:10,mpGain:3,selfMental:-5},...pick(['からて','おおごえ','れいしょう','たどうしょう','べんきょう'])}},
-{name:'うい',hp:110,mental:110,mp:9,races:['きつえんしゃ'],traits:['うわきしょう','だんそんじょひ','れいしょうけい'],moves:{'うわき':{mp:3,special:'affair'},...pick(['あるくTDL','やすむ','からて','れいしょう','たどうしょう','べんきょう','きつえん','いんしゅ','わるだくみ','ちーといつ'])}},
+{name:'あさと',hp:120,mental:80,mp:8,races:['ひばくしゃ','ろうにんせい'],traits:['あるくTDL','無神経','むげん成長','ぼうず','びびり','まゆなし'],moves:{'ピカドンボイス':{mp:8,physical:50,mental:10,selfHp:-10,tags:['おと']},'ろうにんせいかつ':{mp:1,healHp:10,mpGain:3,selfMental:-5},...pick(['からて','おおごえ','れいしょう','たどうしょう','べんきょう'])}},
+{name:'うい',hp:110,mental:110,mp:9,races:['きつえんしゃ'],traits:['うわきしょう','だんそんじょひ','れいしょうけい'],moves:{'うわき':{mp:3,special:'affair'},...pick(['おおごえ','やすむ','からて','れいしょう','たどうしょう','べんきょう','きつえん','いんしゅ','わるだくみ','ちーといつ'])}},
 {name:'みまや',hp:115,mental:95,mp:8,races:['うまづら','きつえんしゃ','たんきだいがく'],traits:['うわきしょう','ギャンブラー','えんきんほう','めめしい'],moves:{'あばれうま':{special:'rampage'},...pick(['たどうしょう','おおごえ','きつえん','いんしゅ','投資','ギャンブル'])}},
 {name:'ゆうま',hp:110,mental:100,mp:7,races:['ろうじん','あるちゅう'],traits:['ボケ','ギャンブラー','しらが','あかいろ','むしば','あるつはいまー'],moves:{'ペンキばくはつ':{mp:3,physical:5,mental:50,tags:['いろ'],allTargets:true},'せいり':{mp:5,special:'seiri'},...pick(['いんしゅ','とうし','ぎゃんぶる','べんきょう','おえかき','さっかー'])}},
 {name:'れんたろう',hp:110,mental:90,mp:6,races:['おんがくか','fラン'],traits:['わがまま','おやのななひかり','くろいろ','じゅんあい'],moves:{'どくそう':{mp:2,physical:10,mental:20,tags:['おと']},'まいご':{special:'lost'},'ついんぶらっく':{mp:1,multi:[10,10],tags:['いろ']},'はるか':{mp:6,special:'haruka'},...pick(['たどうしょう','おおごえ','さっかー','えんそう'])}},
 {name:'まっすー',hp:90,mental:90,mp:9,races:['もじゃもじゃ'],traits:['どくぜつ','びびり','ちゅうそつのいでんし','にじゅうじんかく'],moves:{'きれる':{mp:5,buffPhysicalNext:1.5,buffMentalNext:1.5},'ばとう':{mp:3,special:'verbalDot'},'からみつく':{mp:2,special:'entangle'},...pick(['れいしょう','べんきょう','ギャンブル'])}},
 {name:'まさや',hp:150,mental:90,mp:5,races:['デブ','らぐびーぶ'],traits:['ごうまん','かりめん','あくしゅう','きょたい'],moves:{'だっぷん':{mp:4,special:'poop'},'ねんてん':{mp:1,selfHp:-50,special:'mentalResistStack'},'ばいとテロ':{mp:3,physical:10,mental:10,special:'elderDouble'},...pick(['タックル','べんきょう','ギャンブル','いんしゅ','さっかー','ラップ'])}},
 {name:'さとけい',hp:100,mental:100,mp:8,races:['ふつう'],traits:['いぬけい','じんだいのかこい'],moves:{'えんげき':{mp:1,special:'copy',copyPriority:true},'いぬ':{selfMental:-10,special:'dogGuard'},...pick(['おおごえ','さっかー','べんきょう','ちーといつ','れいしょう','おうと'])}},
-{name:'みやび',hp:80,mental:110,mp:6,races:['しそうか'],traits:['じゅんあい','うんどうおんち','できん','どくぜつ','だんそんじょひ','きけんしそう'],moves:{'ゆかぺろ':{selfHp:-10,buffPhysicalNext:1.2},'けんびきょう':{special:'stealMp'},'おちゃたて':{healMental:10},...pick(['べんきょう','とうし','ラップ','れいしょう','わるだくみ','タックル'])}},
+{name:'みやび',hp:80,mental:110,mp:7,races:['しそうか'],traits:['じゅんあい','うんどうおんち','できん','どくぜつ','だんそんじょひ','きけんしそう'],moves:{'ゆかぺろ':{selfHp:-10,buffPhysicalNext:1.2},'けんびきょう':{special:'stealMp'},'おちゃたて':{healMental:10},...pick(['べんきょう','とうし','ラップ','れいしょう','わるだくみ','タックル'])}},
 {name:'むっちゃん',hp:120,mental:110,mp:6,races:['おんな','でぶ','びびゅつか'],traits:['じあいのこころ','きょたい','ごうまん','ユーチューバー'],moves:{'すいみんぐ':{mp:4,special:'swim'},'かいご':{mp:2,healMental:30},'たたきおこす':{mp:3,physical:40,special:'wakeMp'},...pick(['たっくる','おえかき','おおごえ','べんきょう','しんれいげんしょう'])}},
 {name:'けっぽん',hp:75,mental:75,mp:8,races:['おんな','ミックス'],traits:['ひかりのヴェール','むちのヴェール','ゆいいつしんのかご'],moves:{'かみをまく':{special:'wrapHair'},'ハラールフード':{mp:3,special:'halalFood'},'かめんをとる':{mp:8,special:'removeMask'},'ホロゴヌ・サニア・コイケ':{mp:5,special:'randomMove'},...pick(['しんれいげんしょう','いっぽん','きせいする'])}}  
 ];
@@ -1563,23 +1563,97 @@ function chooseCpu(f){
 
  if(f.rampage>0){
 
- const ks=
-  Object.keys(f.moves);
+  const ks=
+   Object.keys(f.moves);
 
- const name=
+  const name=
+   ks[
+    Math.floor(
+     Math.random()*ks.length
+    )
+   ];
+
+  const action={
+   type:'move',
+   name
+  };
+
+  const move=
+   f.moves[name];
+
+  if(
+   appState.mode==='ffa4' &&
+   moveNeedsTarget(move)
+  ){
+
+   const target=
+    randomLivingEnemy(f);
+
+   if(target){
+    action.targetSide=
+     target.side;
+   }
+  }
+
+  return action;
+ }
+
+ let ks=
+  Object.entries(f.moves)
+   .filter(
+    ([,m])=>
+     f.mp>=
+     effectiveCost(
+      f,
+      m.mp||0
+     )
+   );
+
+ if(!ks.length){
+
+  const action={
+   type:'move',
+   name:'なぐる'
+  };
+
+  if(appState.mode==='ffa4'){
+
+   const target=
+    randomLivingEnemy(f);
+
+   if(target){
+    action.targetSide=
+     target.side;
+   }
+  }
+
+  return action;
+ }
+
+ ks=
+  ks.filter(
+   ([n])=>
+    n!=='防御'||
+    Math.random()<.35
+  );
+
+ const chosen=
   ks[
    Math.floor(
     Math.random()*ks.length
    )
   ];
 
+ const name=
+  chosen[0];
+
+ const move=
+  chosen[1];
+
  const action={
   type:'move',
   name
  };
-
- const move=
-  f.moves[name];
 
  if(
   appState.mode==='ffa4' &&
@@ -1596,75 +1670,6 @@ function chooseCpu(f){
  }
 
  return action;
-}
-
-const name=
- chosen[0];
-
-const move=
- chosen[1];
-
-const action={
- type:'move',
- name
-};
-
-if(
- appState.mode==='ffa4' &&
- moveNeedsTarget(move)
-){
-
- const enemies=
-  livingEnemies(f);
-
- if(enemies.length){
-
-  action.targetSide=
-   enemies[
-    Math.floor(
-     Math.random()*enemies.length
-    )
-   ].side;
- }
-}
-
-return action;
- }
-
- let ks=
-  Object.entries(f.moves)
-   .filter(
-    ([,m])=>
-     f.mp>=
-     effectiveCost(
-      f,
-      m.mp||0
-     )
-   );
-
- if(!ks.length){
-  return {
-   type:'move',
-   name:'なぐる'
-  };
- }
-
- ks=
-  ks.filter(
-   ([n])=>
-    n!=='防御'||
-    Math.random()<.35
-  );
-
- return {
-  type:'move',
-  name:
-   ks[
-    Math.floor(
-     Math.random()*ks.length
-    )
-   ][0]
- };
 }
 function getHolgonuPool(){
 
@@ -2139,59 +2144,7 @@ if(m.special==='copy'){
  return;
 }
 
-  const copiedName=
-   enemyAct.name;
 
-  // えんげき同士はコピーしない
-  if(copiedName==='えんげき'){
-
-   log(
-    `${f.name}はえんげきをコピーできなかった`
-   );
-
-   return;
-  }
-
-  const copiedMove=
-   enemy.moves[copiedName];
-
-  if(!copiedMove){
-   return;
-  }
-
-  log(
-   `${f.name}は「${copiedName}」をえんげきした！`
-  );
-
-  // ホロゴヌをコピーした場合は
-  // さとけい側で別抽選
-  if(
-   copiedName===
-   'ホロゴヌ・サニア・コイケ'
-  ){
-
-   useHolgonu(
-    f,
-    [enemy]
-   );
-
-   return;
-  }
-
-  prepareDefenseMove(
-   f,
-   copiedMove
-  );
-
-  executeMoveEffect(
-   f,
-   copiedName,
-   copiedMove,
-   [enemy]
-  );
-
-  return;
- }
 
  executeMoveEffect(
   f,
@@ -3188,14 +3141,6 @@ if(t){
   {physical:40}
  );
 }
-
-    if(ts[0]){
-     applyDamage(
- f,
- ts[0],
- {physical:40}
-);
-    }
    }
   }
 
