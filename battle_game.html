@@ -12,7 +12,66 @@
 button,select,input{font:inherit}.app{max-width:1180px;margin:auto;padding:18px}.screen{display:none}.screen.active{display:block}.card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:16px;box-shadow:0 12px 32px rgba(0,0,0,.22)}
 h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.btn{border:0;border-radius:13px;padding:12px 15px;background:#2e3850;color:#fff;cursor:pointer;transition:.15s;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}.btn:hover{transform:translateY(-1px);background:#3a4663}.btn.primary{background:#267ea2}.btn.danger{background:#8b3340}.btn.good{background:#2d7a47}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}.small{font-size:.9rem;color:var(--muted)}
 .character-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.character{position:relative;cursor:pointer;min-height:185px}.character.selected{outline:3px solid var(--accent)}.tag{display:inline-block;padding:2px 7px;border-radius:99px;background:#30384a;margin:2px;font-size:.78rem;color:#dce5f4}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:9px 0}.stat{background:#111725;border-radius:10px;padding:7px;text-align:center}.tooltip{position:fixed;z-index:20;max-width:360px;background:#06080d;border:1px solid rgba(255,255,255,.2);padding:12px;border-radius:12px;display:none;white-space:pre-wrap;font-size:.9rem;box-shadow:0 15px 40px rgba(0,0,0,.5)}
-.battle-top{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.fighters{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}.fighter{background:#171d2a;border-radius:18px;padding:14px;border:1px solid rgba(255,255,255,.1)}.fighter.enemy{transform-origin:center}.name{font-size:1.2rem;font-weight:700}.bar{height:16px;background:#0a0d12;border-radius:99px;overflow:hidden;margin:4px 0 8px}.fill{height:100%;transition:width .35s}.hp{background:linear-gradient(90deg,#30bd66,#80e59c)}.mental{background:linear-gradient(90deg,#8d64e8,#c695ff)}.mp{background:linear-gradient(90deg,#3d9cdb,#77d0ff)}.moves{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin-top:14px}.move{min-height:64px;text-align:left}.log{height:260px;overflow:auto;background:#090c12;border-radius:14px;padding:12px;font-size:.94rem;line-height:1.5}.flash{animation:flash .35s}.shake{animation:shake .28s}.heal{animation:heal .55s}@keyframes flash{50%{filter:brightness(2)}}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}@keyframes heal{50%{box-shadow:0 0 25px #6dff9c}}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.spacer{height:8px}.hidden{display:none!important}.result{font-size:1.5rem;font-weight:800;text-align:center;padding:18px}.room{font-size:2rem;letter-spacing:.25em;font-weight:800;color:var(--gold)}
+.battle-top{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.fighters{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}.fighter{background:#171d2a;border-radius:18px;padding:14px;border:1px solid rgba(255,255,255,.1)}.fighter.enemy{transform-origin:center}.name{font-size:1.2rem;font-weight:700}.bar{height:16px;background:#0a0d12;border-radius:99px;overflow:hidden;margin:4px 0 8px}.fill{height:100%;transition:width .35s}.hp{background:linear-gradient(90deg,#30bd66,#80e59c)}.mental{background:linear-gradient(90deg,#8d64e8,#c695ff)}.mp{background:linear-gradient(90deg,#3d9cdb,#77d0ff)}.moves{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin-top:14px}.move-section{
+  width:100%;
+  margin-top:14px;
+}
+
+.move-section-title{
+  font-weight:800;
+  margin:6px 0 8px;
+  padding:6px 10px;
+  border-radius:9px;
+  font-size:.95rem;
+}
+
+.move-section-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:9px;
+}
+
+/* 専用技 */
+.move-section-title.unique{
+  background:#5b294f;
+  color:#ffd8f2;
+}
+
+.move.unique{
+  background:#65315a;
+}
+
+.move.unique:hover{
+  background:#7b3d6e;
+}
+
+/* 使える技 */
+.move-section-title.usable{
+  background:#304a72;
+  color:#d8e9ff;
+}
+
+.move.usable{
+  background:#31527f;
+}
+
+.move.usable:hover{
+  background:#3b6399;
+}
+
+/* 共通コマンド */
+.move-section-title.common{
+  background:#36553c;
+  color:#ddffe4;
+}
+
+.move.common{
+  background:#376443;
+}
+
+.move.common:hover{
+  background:#447b52;
+}.move{min-height:64px;text-align:left}.log{height:260px;overflow:auto;background:#090c12;border-radius:14px;padding:12px;font-size:.94rem;line-height:1.5}.flash{animation:flash .35s}.shake{animation:shake .28s}.heal{animation:heal .55s}@keyframes flash{50%{filter:brightness(2)}}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}@keyframes heal{50%{box-shadow:0 0 25px #6dff9c}}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.spacer{height:8px}.hidden{display:none!important}.result{font-size:1.5rem;font-weight:800;text-align:center;padding:18px}.room{font-size:2rem;letter-spacing:.25em;font-weight:800;color:var(--gold)}
 @media(max-width:700px){.fighters{grid-template-columns:1fr}.log{height:190px}.app{padding:10px}.moves{grid-template-columns:1fr 1fr}.btn{padding:11px}.character-grid{grid-template-columns:1fr 1fr}.character{min-height:160px}.small{font-size:.82rem}}
 </style>
 </head>
@@ -92,7 +151,7 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
     </div>
     <div id="fighters" class="fighters"></div>
     <div class="row" id="switchRow"></div>
-    <div id="moves" class="moves"></div>
+    <div id="moves"></div>
     <h3>ログ</h3>
     <div id="log" class="log"></div>
   </div>
@@ -1279,39 +1338,154 @@ function renderMoves(){
   return;
  }
 
- Object.entries(f.moves)
-  .forEach(([n,m])=>{
+ const groups={
+  unique:[],
+  usable:[],
+  common:[]
+ };
 
-   const b=
-    document.createElement('button');
+ for(
+  const [name,move]
+  of Object.entries(f.moves)
+ ){
 
-   b.className=
-    'btn move';
-
-   const cost=
-    effectiveCost(
-     f,
-     m.mp||0
-    );
-
-   b.textContent=
-    `${n}${cost?`\nMP ${cost}`:''}`;
-
-   b.disabled=
-    f.mp<cost;
-
-   b.onclick=
-    ()=>playerAct(n);
-
-   attachTip(
-    b,
-    moveDetail(n,m,f)
+  if(
+   Object.prototype.hasOwnProperty.call(
+    commonMoves,
+    name
+   )
+  ){
+   groups.common.push(
+    [name,move]
    );
 
-   box.appendChild(b);
-  });
+  }else if(
+   Object.prototype.hasOwnProperty.call(
+    moveBook,
+    name
+   )
+  ){
+   groups.usable.push(
+    [name,move]
+   );
+
+  }else{
+   groups.unique.push(
+    [name,move]
+   );
+  }
+ }
+
+ renderMoveGroup(
+  box,
+  f,
+  '専用技',
+  'unique',
+  groups.unique
+ );
+
+ renderMoveGroup(
+  box,
+  f,
+  '使える技',
+  'usable',
+  groups.usable
+ );
+
+ renderMoveGroup(
+  box,
+  f,
+  '共通コマンド',
+  'common',
+  groups.common
+ );
 }
 
+function renderMoveGroup(
+ box,
+ f,
+ title,
+ type,
+ moves
+){
+
+ if(!moves.length){
+  return;
+ }
+
+ const section=
+  document.createElement('div');
+
+ section.className=
+  'move-section';
+
+ const heading=
+  document.createElement('div');
+
+ heading.className=
+  `move-section-title ${type}`;
+
+ heading.textContent=
+  title;
+
+ section.appendChild(
+  heading
+ );
+
+ const grid=
+  document.createElement('div');
+
+ grid.className=
+  'move-section-grid';
+
+ for(
+  const [n,m]
+  of moves
+ ){
+
+  const b=
+   document.createElement('button');
+
+  b.className=
+   `btn move ${type}`;
+
+  const cost=
+   effectiveCost(
+    f,
+    m.mp||0
+   );
+
+  b.textContent=
+   `${n}${cost?`\nMP ${cost}`:''}`;
+
+  b.disabled=
+   f.mp<cost;
+
+  b.onclick=
+   ()=>playerAct(n);
+
+  attachTip(
+   b,
+   moveDetail(
+    n,
+    m,
+    f
+   )
+  );
+
+  grid.appendChild(
+   b
+  );
+ }
+
+ section.appendChild(
+  grid
+ );
+
+ box.appendChild(
+  section
+ );
+}
 function moveDetail(n,m){
  return `${n}
 ${JSON.stringify(m,null,2).replace(/[{}"]/g,'')}`;
