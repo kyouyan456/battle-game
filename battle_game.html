@@ -863,27 +863,7 @@ function runOnlineTurn(actions){
   }
 
   let targets=
-   allActive()
-    .filter(
-     q=>q!==x.f&&q.alive
-    );
-
-  if(
-   b.mode==='ffa4' &&
-   targets.length>1
-  ){
-   const i=
-    targets.findIndex(
-     t=>t.side>x.f.side
-    );
-
-   if(i>0){
-    targets=[
-     ...targets.slice(i),
-     ...targets.slice(0,i)
-    ];
-   }
-  }
+ livingEnemies(x.f);
  
 
   executeAction(
@@ -935,6 +915,35 @@ function allActive(){
    (t,i)=>t[b.active[i]||0]
   )
   .filter(Boolean);
+}
+
+function livingEnemies(f){
+
+ return allActive().filter(
+  t=>
+   t &&
+   t!==f &&
+   t.alive &&
+   t.hp>0 &&
+   t.mental>0 &&
+   t.side!==f.side
+ );
+}
+
+function randomLivingEnemy(f){
+
+ const enemies=
+  livingEnemies(f);
+
+ if(!enemies.length){
+  return null;
+ }
+
+ return enemies[
+  Math.floor(
+   Math.random()*enemies.length
+  )
+ ];
 }
 
 function beginTurn(){
@@ -1379,16 +1388,170 @@ function playerAct(name){
   return;
  }
 
- if(appState.connection==='friend'){
-  submitOnlineAction({
-   type:'move',
+ const f=
+  activeF(mySide());
+
+ if(!f){
+  return;
+ }
+
+ const m=
+  f.moves[name];
+
+ if(!m){
+  return;
+ }
+
+ // 乱闘で、敵を対象にする単体技なら
+ // 対象選択画面を出す
+ if(
+  appState.mode==='ffa4' &&
+  moveNeedsTarget(m)
+ ){
+
+  showTargetSelect(
+   f,
    name
-  });
+  );
+
+  return;
+ }
+
+ sendPlayerMove(
+  name,
+  null
+ );
+}
+
+function moveNeedsTarget(m){
+
+ // 全体攻撃は選択不要
+ if(m.allTargets){
+  return false;
+ }
+
+ // 自分だけに作用する技
+ if(
+  m.priorityGuard ||
+  m.special==='dodge' ||
+  m.special==='skip' ||
+  m.special==='gundam' ||
+  m.special==='haruka' ||
+  m.special==='rampage' ||
+  m.special==='mentalResistStack' ||
+  m.special==='invest' ||
+  m.special==='swim' ||
+  m.special==='dogGuard' ||
+  m.special==='wrapHair' ||
+  m.special==='halalFood'
+ ){
+  return false;
+ }
+
+ // 通常攻撃・精神攻撃・相手対象特殊技
+ // えんげきもここに含まれる
+ return (
+  m.physical ||
+  m.mental ||
+  m.multi ||
+  m.special==='copy' ||
+  m.special==='parasite' ||
+  m.special==='removeMask' ||
+  m.special==='verbalDot' ||
+  m.special==='entangle' ||
+  m.special==='stealMp' ||
+  m.special==='gamble' ||
+  m.special==='affair' ||
+  m.special==='seiri' ||
+  m.special==='lost' ||
+  m.special==='poop' ||
+  m.special==='elderDouble' ||
+  m.special==='wakeMp' ||
+  m.special==='randomMove'
+ );
+}
+
+function showTargetSelect(f,name){
+
+ const box=
+  document.getElementById('moves');
+
+ const enemies=
+  livingEnemies(f);
+
+ box.innerHTML='';
+
+ if(!enemies.length){
+  box.innerHTML=
+   '<button class="btn" disabled>攻撃できる相手がいません</button>';
+
+  return;
+ }
+
+ const title=
+  document.createElement('div');
+
+ title.className='small';
+ title.textContent=
+  `「${name}」の対象を選択`;
+
+ box.appendChild(title);
+
+ for(const t of enemies){
+
+  const btn=
+   document.createElement('button');
+
+  btn.className=
+   'btn move';
+
+  btn.textContent=
+   `${t.name}\nHP ${Math.max(0,Math.round(t.hp))} / 精神 ${Math.max(0,Math.round(t.mental))}`;
+
+  btn.onclick=
+   ()=>sendPlayerMove(
+    name,
+    t.side
+   );
+
+  box.appendChild(btn);
+ }
+
+ const back=
+  document.createElement('button');
+
+ back.className='btn';
+ back.textContent='技選択に戻る';
+ back.onclick=renderMoves;
+
+ box.appendChild(back);
+}
+
+function sendPlayerMove(
+ name,
+ targetSide=null
+){
+
+ const action={
+  type:'move',
+  name
+ };
+
+ if(targetSide!==null){
+  action.targetSide=
+   targetSide;
+ }
+
+ if(
+  appState.connection==='friend'
+ ){
+  submitOnlineAction(
+   action
+  );
  }else{
-  runTurn({
-   type:'move',
-   name
-  });
+  runTurn(
+   action
+  );
  }
 }
 
@@ -1400,18 +1563,72 @@ function chooseCpu(f){
 
  if(f.rampage>0){
 
-  const ks=
-   Object.keys(f.moves);
+ const ks=
+  Object.keys(f.moves);
 
-  return {
-   type:'move',
-   name:
-    ks[
-     Math.floor(
-      Math.random()*ks.length
-     )
-    ]
-  };
+ const name=
+  ks[
+   Math.floor(
+    Math.random()*ks.length
+   )
+  ];
+
+ const action={
+  type:'move',
+  name
+ };
+
+ const move=
+  f.moves[name];
+
+ if(
+  appState.mode==='ffa4' &&
+  moveNeedsTarget(move)
+ ){
+
+  const target=
+   randomLivingEnemy(f);
+
+  if(target){
+   action.targetSide=
+    target.side;
+  }
+ }
+
+ return action;
+}
+
+const name=
+ chosen[0];
+
+const move=
+ chosen[1];
+
+const action={
+ type:'move',
+ name
+};
+
+if(
+ appState.mode==='ffa4' &&
+ moveNeedsTarget(move)
+){
+
+ const enemies=
+  livingEnemies(f);
+
+ if(enemies.length){
+
+  action.targetSide=
+   enemies[
+    Math.floor(
+     Math.random()*enemies.length
+    )
+   ].side;
+ }
+}
+
+return action;
  }
 
  let ks=
@@ -1628,15 +1845,11 @@ prepareTurnActions(acts);
    continue;
   }
 
-  executeAction(
-   x.f,
-   x.a,
-   acts
-    .map(z=>z.f)
-    .filter(
-     q=>q!==x.f&&q.alive
-    )
-  );
+ executeAction(
+ x.f,
+ x.a,
+ livingEnemies(x.f)
+);
 
   checkDeaths();
 
@@ -1719,6 +1932,40 @@ function executeAction(f,a,targets){
   return;
  }
 
+// 選択された対象がある場合は
+// 生存確認してその相手を先頭にする
+if(
+ a.targetSide!==undefined &&
+ a.targetSide!==null
+){
+
+ const selected=
+  livingEnemies(f)
+   .find(
+    t=>t.side===a.targetSide
+   );
+
+ if(selected){
+
+  targets=[
+   selected,
+   ...targets.filter(
+    t=>t!==selected
+   )
+  ];
+
+ }else if(
+  moveNeedsTarget(m)
+ ){
+
+  log(
+   `${f.name}の攻撃対象はすでに脱落している`
+  );
+
+  return;
+ }
+}
+
  const cost=
   effectiveCost(
    f,
@@ -1793,29 +2040,104 @@ function executeAction(f,a,targets){
  }
 
  // えんげき
- if(m.special==='copy'){
+if(m.special==='copy'){
 
-  const enemy=
-   targets[0];
+ const enemy=
+  targets[0];
 
-  if(!enemy){
-   log('えんげきする相手がいない');
-   return;
-  }
+ if(
+  !enemy ||
+  !enemy.alive
+ ){
+  log(
+   'えんげきする相手がいない'
+  );
 
-  const enemyAct=
-   enemy.plannedAction;
+  return;
+ }
 
-  if(
-   !enemyAct ||
-   enemyAct.type!=='move'
-  ){
-   log(
-    `${f.name}のえんげきは失敗した`
-   );
+ const enemyAct=
+  enemy.plannedAction;
 
-   return;
-  }
+ if(
+  !enemyAct ||
+  enemyAct.type!=='move'
+ ){
+  log(
+   `${f.name}のえんげきは失敗した`
+  );
+
+  return;
+ }
+
+ const copiedName=
+  enemyAct.name;
+
+ if(copiedName==='えんげき'){
+
+  log(
+   `${f.name}はえんげきをコピーできなかった`
+  );
+
+  return;
+ }
+
+ const copiedMove=
+  enemy.moves[
+   copiedName
+  ];
+
+ if(!copiedMove){
+  return;
+ }
+
+ log(
+  `${f.name}は「${copiedName}」をえんげきした！`
+ );
+
+ // ホロゴヌをコピー
+ if(
+  copiedName===
+  'ホロゴヌ・サニア・コイケ'
+ ){
+
+  useHolgonu(
+   f,
+   [enemy]
+  );
+
+  return;
+ }
+
+ prepareDefenseMove(
+  f,
+  copiedMove
+ );
+
+ // コピーした技が全体技
+ if(copiedMove.allTargets){
+
+  executeMoveEffect(
+   f,
+   copiedName,
+   copiedMove,
+   livingEnemies(f)
+  );
+
+  return;
+ }
+
+ // 単体技なら
+ // えんげきで選んだ相手自身に使う
+ executeMoveEffect(
+  f,
+  copiedName,
+  copiedMove,
+  [enemy]
+ );
+
+ return;
+}
 
   const copiedName=
    enemyAct.name;
@@ -2255,10 +2577,15 @@ if(m.special==='rampage'){
   return;
  }
 
- if(m.allTargets){
+if(m.allTargets){
 
-  targets.forEach(
-   t=>applyDamage(f,t,m)
+ livingEnemies(f)
+  .forEach(
+   t=>applyDamage(
+    f,
+    t,
+    m
+   )
   );
 
  }else if(m.multi){
@@ -2829,22 +3156,20 @@ function endTurn(){
 
  for(const f of allActive()){
 
-  if(f.gundam){
+if(f.gundam){
 
-   for(const t of allActive()){
+ const t=
+  randomLivingEnemy(f);
 
-    if(
-     t!==f &&
-     t.alive
-    ){
-    applyDamage(
- f,
- t,
- {physical:10}
-);
-    }
-   }
-  }
+ if(t){
+
+  applyDamage(
+   f,
+   t,
+   {physical:10}
+  );
+ }
+}
 
   if(f.swimming){
 
@@ -2852,13 +3177,17 @@ function endTurn(){
 
    if(f.swimming===0){
 
-    const ts=
-     allActive()
-      .filter(
-       x=>
-        x!==f &&
-        x.alive
-      );
+   const t=
+ randomLivingEnemy(f);
+
+if(t){
+
+ applyDamage(
+  f,
+  t,
+  {physical:40}
+ );
+}
 
     if(ts[0]){
      applyDamage(
