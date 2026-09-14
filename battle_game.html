@@ -2162,36 +2162,18 @@ function syncBattleMessages(){
  }
 
  while(
-  queuedBattleLogCount<
-  b.log.length
- ){
-
- function log(
- s,
- effect=null,
- side=null,
- sound=null
+ queuedBattleLogCount<
+ b.log.length
 ){
 
- const b=
-  appState.battle;
+ battleMessageQueue.push(
+  b.log[
+   queuedBattleLogCount
+  ]
+ );
 
- if(!b){
-  return;
- }
-
- b.log.push({
-  text:s,
-  effect,
-  side,
-  sound
- });
-
- renderBattle();
+ queuedBattleLogCount++;
 }
-
-  queuedBattleLogCount++;
- }
 
  if(
   !battleMessagePlaying
@@ -4157,6 +4139,10 @@ if(
   'debuff'
  );
 }
+
+/* executeMoveEffect終了 */
+}
+
 function effectiveCost(f,c){
 
  if(
@@ -4604,7 +4590,7 @@ function directDamage(
      ?` 精神-${Math.round(q)}`
      :''
    }`+
-   ` (${why})`
+   ` (${why})`,
   'damage',
    t.side,
    'damage'
