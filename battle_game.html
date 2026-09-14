@@ -80,20 +80,11 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
 .battle-stage{
   position:relative;
   width:100%;
-  min-height:720px;
 
   border-radius:18px;
   overflow:hidden;
 
-  background:
-    linear-gradient(
-      rgba(10,15,22,.12),
-      rgba(10,15,22,.20)
-    ),
-    #78848b;
-
-  background-size:cover;
-  background-position:center;
+  background:#10131a;
 
   border:1px solid
     rgba(255,255,255,.15);
@@ -101,8 +92,22 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
   box-shadow:
     0 16px 40px
     rgba(0,0,0,.35);
+}
 
+.battle-view{
+  position:relative;
+  width:100%;
+
+  /* 1536×1024と同じ3:2 */
+  aspect-ratio:3 / 2;
+
+  overflow:hidden;
   padding:12px;
+
+  background-color:#78848b;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
 }
 
 
@@ -603,14 +608,38 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
 
 @media(max-width:700px){
 
- .battle-stage{
-  min-height:650px;
-  padding:7px;
- }
+.battle-stage{
+  position:relative;
+  width:100%;
 
- .enemy-hud-row{
-  gap:3px;
- }
+  border-radius:18px;
+  overflow:hidden;
+
+  background:#10131a;
+
+  border:1px solid
+    rgba(255,255,255,.15);
+
+  box-shadow:
+    0 16px 40px
+    rgba(0,0,0,.35);
+}
+
+.battle-view{
+  position:relative;
+  width:100%;
+
+  /* 1536×1024と同じ3:2 */
+  aspect-ratio:3 / 2;
+
+  overflow:hidden;
+  padding:12px;
+
+  background-color:#78848b;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
 
  .enemy-hud{
   width:33%;
@@ -817,14 +846,14 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
       </span>
     </div>
 
-    <!-- 自分ステータス -->
-    <div
-      <div
+  <!-- 自分ステータス -->
+<div
   id="playerHud"
   class="player-hud"
 ></div>
 
-  </div>
+<!-- 背景範囲 battleView ここまで -->
+</div>
 
 <!-- 交代 -->
 <div
@@ -2344,16 +2373,27 @@ function renderBattle(){
   `ターン ${b.turn}`;
 
 
- /* 背景 */
+/* 背景 */
 
- const stage=
-  document.getElementById(
-   'battleStage'
-  );
+const view=
+ document.getElementById(
+  'battleView'
+ );
 
- if(battleAssets.background){
+if(battleAssets.background){
 
-  stage.style.backgroundImage=
+ view.style.backgroundImage=
+  `linear-gradient(
+     rgba(10,15,22,.08),
+     rgba(10,15,22,.15)
+   ),
+   url("${battleAssets.background}")`;
+
+}else{
+
+ view.style.backgroundImage=
+  '';
+}
    `linear-gradient(
       rgba(10,15,22,.08),
       rgba(10,15,22,.15)
