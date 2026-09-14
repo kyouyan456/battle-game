@@ -630,18 +630,19 @@ body{
   width:100%;
   max-width:100%;
 }
-  .battle-view{
-    width:100%;
-    aspect-ratio:3 / 2;
+ .battle-view{
+  width:100%;
 
-    padding:6px;
+  aspect-ratio:auto;
+  min-height:520px;
+
+  padding:6px;
 
   background-size:cover;
-background-color:#10131a;
-    background-position:center;
-    background-repeat:no-repeat;
-  }
-
+  background-color:#10131a;
+  background-position:center;
+  background-repeat:no-repeat;
+}
   /* 上部 */
   .battle-header{
     margin-bottom:2px;
@@ -714,7 +715,7 @@ background-color:#10131a;
 
   /* 戦場 */
   .battle-field{
-    height:105px;
+    height:220px;
     margin-top:-2px;
   }
 
@@ -755,19 +756,19 @@ background-color:#10131a;
 
   /* メッセージ */
   .battle-message{
-    min-height:42px;
+    min-height:58px;
 
     margin:
-      -2px 2% 4px 30%;
+      -8px 3% 8px 28%;
 
     padding:
-      7px 22px 7px 9px;
+      10px 26px 10px 12px;
 
     border-width:2px;
     outline-width:1px;
     border-radius:8px;
 
-    font-size:.68rem;
+    font-size:.78rem;
     line-height:1.25;
   }
 
@@ -779,17 +780,17 @@ background-color:#10131a;
 
   /* 自分HUD */
   .player-hud{
-    width:70%;
-    min-height:52px;
+    width:72%;
+    min-height:72px;
 
     margin-top:0;
 
     grid-template-columns:
-      38px 1fr;
+      46px 1fr;
 
-    gap:5px;
+    gap:6px;
 
-    padding:4px;
+    padding:6px;
 
     border-width:1px;
     border-radius:8px;
@@ -797,8 +798,8 @@ background-color:#10131a;
 
   .player-hud .hud-icon,
   .player-hud .hud-icon-placeholder{
-    width:38px;
-    height:38px;
+    width:46px;
+    height:46px;
 
     border-radius:6px;
     font-size:.45rem;
