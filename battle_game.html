@@ -685,17 +685,28 @@ background-color:#10131a;
     overflow:hidden;
     text-overflow:ellipsis;
   }
+.mini-stat{
+  grid-template-columns:
+    24px 1fr 44px;
 
-  .mini-stat{
-    grid-template-columns:24px 1fr;
-    gap:2px;
+  gap:2px;
+  align-items:center;
 
-    font-size:.55rem;
-  }
+  font-size:.55rem;
+}
+
+.mini-stat .stat-number{
+  display:inline;
+  font-size:.5rem;
+  text-align:right;
+  white-space:nowrap;
+}
 
   .mini-stat .stat-number{
-    display:none;
-  }
+  display:inline;
+  font-size:.5rem;
+  white-space:nowrap;
+}
 
   .mini-bar{
     height:5px;
@@ -798,11 +809,11 @@ background-color:#10131a;
   }
 
   .player-hud .mini-stat{
-    grid-template-columns:
-      22px 1fr;
+  grid-template-columns:
+    22px 1fr 44px;
 
-    font-size:.52rem;
-  }
+  font-size:.52rem;
+}
 
   .player-hud .small{
     font-size:.48rem;
