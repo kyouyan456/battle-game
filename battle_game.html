@@ -73,6 +73,624 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
   background:#447b52;
 }.move{min-height:64px;text-align:left}.log{height:260px;overflow:auto;background:#090c12;border-radius:14px;padding:12px;font-size:.94rem;line-height:1.5}.flash{animation:flash .35s}.shake{animation:shake .28s}.heal{animation:heal .55s}@keyframes flash{50%{filter:brightness(2)}}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}@keyframes heal{50%{box-shadow:0 0 25px #6dff9c}}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.spacer{height:8px}.hidden{display:none!important}.result{font-size:1.5rem;font-weight:800;text-align:center;padding:18px}.room{font-size:2rem;letter-spacing:.25em;font-weight:800;color:var(--gold)}
 @media(max-width:700px){.fighters{grid-template-columns:1fr}.log{height:190px}.app{padding:10px}.moves{grid-template-columns:1fr 1fr}.btn{padding:11px}.character-grid{grid-template-columns:1fr 1fr}.character{min-height:160px}.small{font-size:.82rem}}
+/* =========================
+   新戦闘画面
+========================= */
+
+.battle-stage{
+  position:relative;
+  width:100%;
+  min-height:720px;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      rgba(10,15,22,.12),
+      rgba(10,15,22,.20)
+    ),
+    #78848b;
+
+  background-size:cover;
+  background-position:center;
+
+  border:1px solid
+    rgba(255,255,255,.15);
+
+  box-shadow:
+    0 16px 40px
+    rgba(0,0,0,.35);
+
+  padding:12px;
+}
+
+
+/* 上部 */
+
+.battle-header{
+  position:relative;
+  z-index:20;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:8px;
+}
+
+
+/* =========================
+   敵HUD
+========================= */
+
+.enemy-hud-row{
+  position:relative;
+  z-index:15;
+
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+
+  min-height:100px;
+}
+
+.enemy-hud{
+  width:min(310px,32%);
+
+  display:grid;
+  grid-template-columns:62px 1fr;
+  gap:8px;
+
+  padding:8px;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(20,36,52,.96),
+      rgba(10,23,36,.96)
+    );
+
+  border:
+    2px solid
+    rgba(220,240,255,.8);
+
+  border-radius:14px;
+
+  box-shadow:
+    0 6px 16px
+    rgba(0,0,0,.35);
+}
+
+.hud-icon{
+  width:62px;
+  height:62px;
+
+  object-fit:contain;
+
+  background:
+    rgba(255,255,255,.08);
+
+  border:
+    2px solid
+    rgba(255,255,255,.45);
+
+  border-radius:10px;
+}
+
+.hud-icon-placeholder{
+  width:62px;
+  height:62px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  background:
+    #35445a;
+
+  border:
+    2px solid
+    rgba(255,255,255,.45);
+
+  border-radius:10px;
+
+  font-size:.72rem;
+  color:#d9e3ef;
+}
+
+.hud-name{
+  font-weight:800;
+  margin-bottom:3px;
+}
+
+.mini-stat{
+  display:grid;
+
+  grid-template-columns:
+    35px 1fr 70px;
+
+  gap:5px;
+  align-items:center;
+
+  font-size:.75rem;
+}
+
+.mini-bar{
+  height:9px;
+
+  background:#070b10;
+
+  border-radius:99px;
+
+  overflow:hidden;
+}
+
+.mini-fill{
+  height:100%;
+
+  transition:
+    width .3s;
+}
+
+
+/* =========================
+   戦場
+========================= */
+
+.battle-field{
+  position:relative;
+
+  height:330px;
+
+  margin-top:-10px;
+}
+
+
+/* 自分側 */
+
+.player-sprite-area{
+  position:absolute;
+
+  left:1%;
+  bottom:0;
+
+  width:34%;
+  height:92%;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+}
+
+
+/* 敵側 */
+
+.enemy-sprite-area{
+  position:absolute;
+
+  right:2%;
+  top:25px;
+
+  width:63%;
+  height:75%;
+
+  display:flex;
+  justify-content:flex-end;
+  align-items:flex-end;
+
+  gap:2%;
+}
+
+
+/* =========================
+   立ち絵
+========================= */
+
+.fighter-visual{
+  position:relative;
+
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+
+  transform-origin:
+    center bottom;
+}
+
+.player-visual{
+  width:100%;
+  height:100%;
+}
+
+.enemy-visual{
+  width:30%;
+  height:100%;
+}
+
+.battle-sprite{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  object-position:
+    center bottom;
+
+  user-select:none;
+
+  pointer-events:none;
+}
+
+.sprite-placeholder{
+  width:120px;
+  height:210px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+
+  border:
+    2px dashed
+    rgba(255,255,255,.7);
+
+  border-radius:20px;
+
+  background:
+    rgba(25,40,55,.55);
+
+  color:white;
+
+  font-weight:700;
+}
+
+.player-visual
+.sprite-placeholder{
+  width:190px;
+  height:270px;
+}
+
+
+/* =========================
+   メッセージ
+========================= */
+
+.battle-message{
+  position:relative;
+  z-index:20;
+
+  min-height:92px;
+
+  margin:
+    -12px 4% 8px 36%;
+
+  padding:
+    19px 44px 19px 22px;
+
+  display:flex;
+  align-items:center;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(25,42,60,.97),
+      rgba(8,22,35,.97)
+    );
+
+  border:
+    4px solid
+    #e9f4ff;
+
+  outline:
+    3px solid
+    #31cbd5;
+
+  border-radius:15px;
+
+  box-shadow:
+    0 7px 18px
+    rgba(0,0,0,.35);
+
+  font-size:
+    clamp(
+      1rem,
+      2vw,
+      1.35rem
+    );
+
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.message-next{
+  position:absolute;
+
+  right:15px;
+  bottom:9px;
+
+  opacity:.75;
+
+  animation:
+    messageArrow
+    .8s
+    infinite alternate;
+}
+
+@keyframes messageArrow{
+  from{
+    transform:
+      translateY(-2px);
+  }
+
+  to{
+    transform:
+      translateY(3px);
+  }
+}
+
+
+/* =========================
+   自分HUD
+========================= */
+
+.player-hud{
+  position:relative;
+  z-index:20;
+
+  width:46%;
+
+  min-height:110px;
+
+  margin-top:-2px;
+
+  display:grid;
+
+  grid-template-columns:
+    82px 1fr;
+
+  gap:10px;
+
+  padding:10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(20,36,52,.97),
+      rgba(8,21,34,.97)
+    );
+
+  border:
+    2px solid
+    rgba(230,245,255,.85);
+
+  border-radius:15px;
+
+  box-shadow:
+    0 7px 18px
+    rgba(0,0,0,.4);
+}
+
+.player-hud
+.hud-icon,
+.player-hud
+.hud-icon-placeholder{
+  width:82px;
+  height:82px;
+}
+
+
+/* =========================
+   コマンド
+========================= */
+
+.battle-command{
+  position:relative;
+  z-index:25;
+
+  margin-top:10px;
+
+  padding:10px;
+
+  background:
+    rgba(9,20,32,.94);
+
+  border:
+    2px solid
+    rgba(190,220,245,.55);
+
+  border-radius:16px;
+}
+
+.battle-switch{
+  position:relative;
+  z-index:25;
+
+  margin-top:8px;
+}
+
+
+/* =========================
+   エフェクト
+========================= */
+
+.effect-damage{
+  animation:
+    effectDamage
+    .36s;
+}
+
+.effect-buff{
+  animation:
+    effectBuff
+    .45s;
+}
+
+.effect-debuff{
+  animation:
+    effectDebuff
+    .45s;
+}
+
+.effect-heal{
+  animation:
+    effectHeal
+    .50s;
+}
+
+@keyframes effectDamage{
+
+  40%{
+    filter:
+      sepia(1)
+      saturate(8)
+      hue-rotate(315deg)
+      brightness(1.3);
+
+    transform:
+      translateX(-7px);
+  }
+
+  70%{
+    transform:
+      translateX(7px);
+  }
+}
+
+@keyframes effectBuff{
+
+  50%{
+    filter:
+      sepia(1)
+      saturate(7)
+      hue-rotate(5deg)
+      brightness(1.5);
+  }
+}
+
+@keyframes effectDebuff{
+
+  50%{
+    filter:
+      sepia(1)
+      saturate(7)
+      hue-rotate(155deg)
+      brightness(1.3);
+  }
+}
+
+@keyframes effectHeal{
+
+  50%{
+    filter:
+      sepia(1)
+      saturate(6)
+      hue-rotate(285deg)
+      brightness(1.5);
+  }
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media(max-width:700px){
+
+ .battle-stage{
+  min-height:650px;
+  padding:7px;
+ }
+
+ .enemy-hud-row{
+  gap:3px;
+ }
+
+ .enemy-hud{
+  width:33%;
+
+  grid-template-columns:1fr;
+
+  padding:5px;
+ }
+
+ .enemy-hud
+ .hud-icon,
+ .enemy-hud
+ .hud-icon-placeholder{
+  display:none;
+ }
+
+ .mini-stat{
+  grid-template-columns:
+    26px 1fr;
+
+  font-size:.65rem;
+ }
+
+ .mini-stat
+ .stat-number{
+  display:none;
+ }
+
+ .battle-field{
+  height:260px;
+ }
+
+ .player-sprite-area{
+  width:39%;
+ }
+
+ .enemy-sprite-area{
+  width:60%;
+ }
+
+ .sprite-placeholder{
+  width:75px;
+  height:145px;
+
+  font-size:.7rem;
+ }
+
+ .player-visual
+ .sprite-placeholder{
+  width:115px;
+  height:190px;
+ }
+
+ .battle-message{
+  margin:
+    -5px 2% 8px 28%;
+
+  min-height:75px;
+
+  padding:
+    14px 34px 14px 14px;
+
+  font-size:.9rem;
+ }
+
+ .player-hud{
+  width:75%;
+
+  grid-template-columns:
+    60px 1fr;
+ }
+
+ .player-hud
+ .hud-icon,
+ .player-hud
+ .hud-icon-placeholder{
+  width:60px;
+  height:60px;
+ }
+}
 </style>
 </head>
 <body>
@@ -139,22 +757,84 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
 </section>
 
 <section id="battle" class="screen">
-  <div class="card">
-    <div class="battle-top">
+
+  <div id="battleStage" class="battle-stage">
+
+    <!-- 上部 -->
+    <div class="battle-header">
+
       <div>
         <b id="modeLabel"></b>
-        <div class="small" id="turnLabel"></div>
+        <div id="turnLabel" class="small"></div>
       </div>
-      <div class="row">
-        <button class="btn danger" onclick="retire()">退散</button>
-      </div>
+
+      <button
+        class="btn danger"
+        onclick="retire()"
+      >
+        退散
+      </button>
+
     </div>
-    <div id="fighters" class="fighters"></div>
-    <div class="row" id="switchRow"></div>
-    <div id="moves"></div>
-    <h3>ログ</h3>
-    <div id="log" class="log"></div>
+
+    <!-- 敵ステータス -->
+    <div
+      id="enemyHudRow"
+      class="enemy-hud-row"
+    ></div>
+
+    <!-- キャラクター表示エリア -->
+    <div class="battle-field">
+
+      <!-- 自分 -->
+      <div
+        id="playerSpriteArea"
+        class="player-sprite-area"
+      ></div>
+
+      <!-- 敵 -->
+      <div
+        id="enemySpriteArea"
+        class="enemy-sprite-area"
+      ></div>
+
+    </div>
+
+    <!-- メッセージ -->
+    <div
+      id="battleMessage"
+      class="battle-message"
+      onclick="advanceBattleMessage()"
+    >
+      <span id="battleMessageText">
+        対戦開始！
+      </span>
+
+      <span class="message-next">
+        ▼
+      </span>
+    </div>
+
+    <!-- 自分ステータス -->
+    <div
+      id="playerHud"
+      class="player-hud"
+    ></div>
+
+    <!-- 交代 -->
+    <div
+      id="switchRow"
+      class="row battle-switch"
+    ></div>
+
+    <!-- コマンド -->
+    <div
+      id="moves"
+      class="battle-command"
+    ></div>
+
   </div>
+
 </section>
 
 <section id="result" class="screen">
@@ -173,6 +853,101 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
 <div id="tooltip" class="tooltip"></div>
 
 <script>
+/* =========================
+   素材設定
+   空欄ならプレースホルダー表示
+========================= */
+
+const battleAssets={
+
+ background:'',
+
+ characters:{
+
+  KK:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  あさと:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  うい:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  みまや:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  ゆうま:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  れんたろう:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  まっすー:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  まさや:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  さとけい:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  みやび:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  むっちゃん:{
+   player:'',
+   enemy:'',
+   icon:''
+  },
+
+  けっぽん:{
+   player:'',
+   enemy:'',
+   icon:''
+  }
+ },
+
+ sounds:{
+
+  command:'',
+  damage:'',
+  buff:'',
+  debuff:'',
+  heal:'',
+  defeat:'',
+  victory:''
+ }
+};
 const P={normal:.5,low:.25,evasion:.25,accident:.25};
 
 const commonMoves={
@@ -259,6 +1034,18 @@ let onlineRoomCode=null;
 let onlineHostId=null;
 let onlineWaitingAction=false;
 
+/* =========================
+   戦闘メッセージ
+========================= */
+
+let battleMessageQueue=[];
+
+let battleMessageTimer=null;
+
+let battleMessagePlaying=false;
+
+let queuedBattleLogCount=0;  
+  
 function isOnlineHost(){
  return appState.connection==='friend'&&onlinePlayerId===onlineHostId;
 }
@@ -757,6 +1544,7 @@ function startBattle(){
  }
 
  appState.battle=b;
+resetBattleMessages();
 
  appState.lastSetup={
   ...appState,
@@ -799,6 +1587,7 @@ function buildOnlineBattle(players,mode){
   finished:false,
   winnerOwnerId:null
  };
+  resetBattleMessages();
 }
 
 function aliveOnlinePlayerIds(){
@@ -1206,77 +1995,511 @@ function applyGlobalStart(){
   }
  }
 }
+  function getCharacterAssets(name){
 
+ return (
+  battleAssets.characters[name] ||
+  {
+   player:'',
+   enemy:'',
+   icon:''
+  }
+ );
+}
+
+
+function spriteHtml(
+ fighter,
+ type
+){
+
+ const assets=
+  getCharacterAssets(
+   fighter.name
+  );
+
+ const src=
+  type==='player'
+   ?assets.player
+   :assets.enemy;
+
+ if(src){
+
+  return `
+   <img
+    class="battle-sprite"
+    src="${src}"
+    alt="${fighter.name}"
+   >
+  `;
+ }
+
+ return `
+  <div class="sprite-placeholder">
+   ${fighter.name}<br>
+   ${type==='player'
+    ?'自分側立ち絵'
+    :'敵側立ち絵'}
+  </div>
+ `;
+}
+
+
+function iconHtml(fighter){
+
+ const assets=
+  getCharacterAssets(
+   fighter.name
+  );
+
+ if(assets.icon){
+
+  return `
+   <img
+    class="hud-icon"
+    src="${assets.icon}"
+    alt="${fighter.name}"
+   >
+  `;
+ }
+
+ return `
+  <div class="hud-icon-placeholder">
+   ${fighter.name}<br>
+   アイコン
+  </div>
+ `;
+}
+  function miniStat(
+ name,
+ value,
+ max,
+ type
+){
+
+ const safeMax=
+  Math.max(
+   1,
+   max
+  );
+
+ const percent=
+  Math.max(
+   0,
+   Math.min(
+    100,
+    value/safeMax*100
+   )
+  );
+
+ return `
+  <div class="mini-stat">
+
+   <span>
+    ${name}
+   </span>
+
+   <div class="mini-bar">
+    <div
+     class="mini-fill ${type}"
+     style="width:${percent}%"
+    ></div>
+   </div>
+
+   <span class="stat-number">
+    ${Math.max(
+     0,
+     Math.round(value)
+    )}/${Math.round(max)}
+   </span>
+
+  </div>
+ `;
+}
+function resetBattleMessages(){
+
+ battleMessageQueue=[];
+
+ battleMessagePlaying=false;
+
+ queuedBattleLogCount=0;
+
+ if(battleMessageTimer){
+
+  clearTimeout(
+   battleMessageTimer
+  );
+
+  battleMessageTimer=null;
+ }
+
+ const text=
+  document.getElementById(
+   'battleMessageText'
+  );
+
+ if(text){
+  text.textContent=
+   '対戦開始！';
+ }
+}
+
+
+function syncBattleMessages(){
+
+ const b=
+  appState.battle;
+
+ if(!b){
+  return;
+ }
+
+ if(
+  b.log.length<
+  queuedBattleLogCount
+ ){
+  queuedBattleLogCount=0;
+ }
+
+ while(
+  queuedBattleLogCount<
+  b.log.length
+ ){
+
+  battleMessageQueue.push(
+   b.log[
+    queuedBattleLogCount
+   ]
+  );
+
+  queuedBattleLogCount++;
+ }
+
+ if(
+  !battleMessagePlaying
+ ){
+  showNextBattleMessage();
+ }
+}
+
+
+function showNextBattleMessage(){
+
+ if(
+  !battleMessageQueue.length
+ ){
+
+  battleMessagePlaying=false;
+
+  return;
+ }
+
+ battleMessagePlaying=true;
+
+ const text=
+  battleMessageQueue.shift();
+
+ const box=
+  document.getElementById(
+   'battleMessageText'
+  );
+
+ if(box){
+
+  box.textContent=
+   text;
+ }
+
+ if(battleMessageTimer){
+
+  clearTimeout(
+   battleMessageTimer
+  );
+ }
+
+ battleMessageTimer=
+  setTimeout(
+   ()=>{
+    battleMessagePlaying=false;
+
+    showNextBattleMessage();
+   },
+   1100
+  );
+}
+
+
+function advanceBattleMessage(){
+
+ if(battleMessageTimer){
+
+  clearTimeout(
+   battleMessageTimer
+  );
+
+  battleMessageTimer=null;
+ }
+
+ battleMessagePlaying=false;
+
+ showNextBattleMessage();
+}
 function renderBattle(){
 
- const b=appState.battle;
+ const b=
+  appState.battle;
 
- document.getElementById('modeLabel').textContent=
+ if(!b){
+  return;
+ }
+
+ const my=
+  activeF(
+   mySide()
+  );
+
+ const enemies=
+  allActive()
+   .filter(
+    f=>
+     f &&
+     f.alive &&
+     f.side!==mySide()
+   );
+
+
+ /* モード */
+
+ document.getElementById(
+  'modeLabel'
+ ).textContent=
+
   b.mode==='duel'
    ?'タイマン'
+
    :b.mode==='team3'
     ?'3 vs 3'
+
     :appState.connection==='friend'
      ?'オンライン乱闘'
      :'4人乱闘';
 
- document.getElementById('turnLabel').textContent=
+
+ document.getElementById(
+  'turnLabel'
+ ).textContent=
   `ターン ${b.turn}`;
 
- const fs=
-  document.getElementById('fighters');
 
- fs.innerHTML='';
+ /* 背景 */
 
- allActive().forEach((f,idx)=>{
+ const stage=
+  document.getElementById(
+   'battleStage'
+  );
 
-  const d=
-   document.createElement('div');
+ if(battleAssets.background){
 
-  d.className=
-   'fighter '+
-   (idx?'enemy':'');
+  stage.style.backgroundImage=
+   `linear-gradient(
+      rgba(10,15,22,.08),
+      rgba(10,15,22,.15)
+    ),
+    url("${battleAssets.background}")`;
 
-  d.id=
-   'fighter-'+f.side;
+ }else{
 
-  const who=
-   appState.connection==='friend'
-    ?(
-      f.ownerId===onlinePlayerId
-       ?'（あなた）'
-       :'（プレイヤー）'
-     )
-    :(
-      f.side===0
-       ?'（あなた）'
-       :'（CP）'
-     );
+  stage.style.backgroundImage=
+   '';
+ }
 
-  d.innerHTML=
-   `<div class="name">${f.name}${who}</div>
-    ${bar('HP',f.hp,f.maxHp,'hp')}
-    ${bar('精神',f.mental,f.maxMental,'mental')}
-    ${bar('MP',f.mp,f.maxMp,'mp')}
-    <div class="small">種族: ${f.races.join(', ')}</div>
-    <div class="small">状態: ${statusText(f)}</div>`;
 
-  fs.appendChild(d);
- });
+ /* =========================
+    敵HUD
+ ========================= */
+
+ const enemyHud=
+  document.getElementById(
+   'enemyHudRow'
+  );
+
+ enemyHud.innerHTML='';
+
+ for(const f of enemies){
+
+  const hud=
+   document.createElement(
+    'div'
+   );
+
+  hud.className=
+   'enemy-hud';
+
+  hud.innerHTML=
+   `
+    ${iconHtml(f)}
+
+    <div>
+
+     <div class="hud-name">
+      ${f.name}
+     </div>
+
+     ${miniStat(
+      'HP',
+      f.hp,
+      f.maxHp,
+      'hp'
+     )}
+
+     ${miniStat(
+      '精神',
+      f.mental,
+      f.maxMental,
+      'mental'
+     )}
+
+     ${miniStat(
+      'MP',
+      f.mp,
+      f.maxMp,
+      'mp'
+     )}
+
+    </div>
+   `;
+
+  enemyHud.appendChild(
+   hud
+  );
+ }
+
+
+ /* =========================
+    自分立ち絵
+ ========================= */
+
+ const playerSprite=
+  document.getElementById(
+   'playerSpriteArea'
+  );
+
+ if(my){
+
+  playerSprite.innerHTML=
+   `
+    <div
+     id="fighter-${my.side}"
+     class="
+      fighter-visual
+      player-visual
+     "
+    >
+     ${spriteHtml(
+      my,
+      'player'
+     )}
+    </div>
+   `;
+
+ }else{
+
+  playerSprite.innerHTML='';
+ }
+
+
+ /* =========================
+    敵立ち絵
+ ========================= */
+
+ const enemySprites=
+  document.getElementById(
+   'enemySpriteArea'
+  );
+
+ enemySprites.innerHTML='';
+
+ for(const f of enemies){
+
+  const visual=
+   document.createElement(
+    'div'
+   );
+
+  visual.id=
+   `fighter-${f.side}`;
+
+  visual.className=
+   'fighter-visual enemy-visual';
+
+  visual.innerHTML=
+   spriteHtml(
+    f,
+    'enemy'
+   );
+
+  enemySprites.appendChild(
+   visual
+  );
+ }
+
+
+ /* =========================
+    自分HUD
+ ========================= */
+
+ const playerHud=
+  document.getElementById(
+   'playerHud'
+  );
+
+ if(my){
+
+  playerHud.innerHTML=
+   `
+    ${iconHtml(my)}
+
+    <div>
+
+     <div class="hud-name">
+      ${my.name}
+     </div>
+
+     ${miniStat(
+      'HP',
+      my.hp,
+      my.maxHp,
+      'hp'
+     )}
+
+     ${miniStat(
+      '精神',
+      my.mental,
+      my.maxMental,
+      'mental'
+     )}
+
+     ${miniStat(
+      'MP',
+      my.mp,
+      my.maxMp,
+      'mp'
+     )}
+
+     <div class="small">
+      ${statusText(my)}
+     </div>
+
+    </div>
+   `;
+ }
+
 
  renderMoves();
+
  renderSwitch();
 
- const logBox=
-  document.getElementById('log');
-
- logBox.innerHTML=
-  b.log
-   .slice(-120)
-   .map(x=>`<div>${x}</div>`)
-   .join('');
-
- logBox.scrollTop=99999;
+ syncBattleMessages();
 }
 
 function bar(n,v,m,cl){
@@ -2771,6 +3994,10 @@ if(m.allTargets){
     f.maxHp,
     f.hp+m.healHp
    );
+   animateF(
+ f,
+ 'heal'
+);
  }
 
  if(m.healMental){
@@ -2779,7 +4006,10 @@ if(m.allTargets){
     f.maxMental,
     f.mental+m.healMental
    );
- }
+animateF(
+ f,
+ 'heal'
+); }
 
  if(m.mpGain){
   f.mp=
@@ -2787,7 +4017,7 @@ if(m.allTargets){
     f.maxMp,
     f.mp+m.mpGain
    );
- }
+}
 
  if(m.selfHp){
   f.hp+=m.selfHp;
@@ -2807,13 +4037,19 @@ if(m.allTargets){
 if(m.buffPhysicalNext){
 
  f.physicalBuff*=
-  m.buffPhysicalNext;
+  m.buffPhysicalNext;animateF(
+ f,
+ 'buff'
+);
 }
 
 if(m.buffMentalNext){
 
  f.mentalBuff*=
-  m.buffMentalNext;
+  m.buffMentalNext;animateF(
+ f,
+ 'buff'
+);
 }
 
  if(
@@ -2821,7 +4057,10 @@ if(m.buffMentalNext){
   targets[0]
  ){
   targets[0].nextM*=
-   m.debuffEnemyMentalAtk;
+   m.debuffEnemyMentalAtk;animateF(
+ targets[0],
+ 'debuff'
+);
  }
 }
 
@@ -3239,37 +4478,110 @@ function applyDamage(
   );
  }
 }
-function directDamage(t,p,q,why){
+function directDamage(
+ t,
+ p,
+ q,
+ why
+){
 
  t.hp-=
-  Math.round(p||0);
+  Math.round(
+   p||0
+  );
 
  t.mental-=
-  Math.round(q||0);
+  Math.round(
+   q||0
+  );
 
- if((p||q)&&why){
+ if(
+  (p||q)&&
+  why
+ ){
 
   log(
    `${t.name}に`+
-   `${p?` HP-${Math.round(p)}`:''}`+
-   `${q?` 精神-${Math.round(q)}`:''}`+
+   `${p
+     ?` HP-${Math.round(p)}`
+     :''
+   }`+
+   `${q
+     ?` 精神-${Math.round(q)}`
+     :''
+   }`+
    ` (${why})`
+  );
+
+  setTimeout(
+   ()=>{
+    animateF(
+     t,
+     'damage'
+    );
+   },
+   0
   );
  }
 }
 
-function animateF(f,cl){
+function animateF(
+ f,
+ type
+){
 
  const e=
   document.getElementById(
    'fighter-'+f.side
   );
 
- if(e){
-  e.classList.remove(cl);
-  void e.offsetWidth;
-  e.classList.add(cl);
+ if(!e){
+  return;
  }
+
+ const map={
+
+  damage:
+   'effect-damage',
+
+  buff:
+   'effect-buff',
+
+  debuff:
+   'effect-debuff',
+
+  heal:
+   'effect-heal',
+
+  flash:
+   'effect-buff',
+
+  shake:
+   'effect-damage'
+ };
+
+ const cl=
+  map[type]||
+  type;
+
+ e.classList.remove(
+  cl
+ );
+
+ void e.offsetWidth;
+
+ e.classList.add(
+  cl
+ );
+
+ setTimeout(
+  ()=>{
+   e.classList.remove(
+    cl
+   );
+  },
+  550
+ );
 }
 
 function endTurn(){
@@ -3561,6 +4873,30 @@ function showOnlineResult(){
  show('result');
 }
 
+function playBattleSound(name){
+
+ const src=
+  battleAssets.sounds[
+   name
+  ];
+
+ if(!src){
+
+  return;
+ }
+
+ try{
+
+  const audio=
+   new Audio(src);
+
+  audio.volume=.6;
+
+  audio.play();
+
+ }catch(e){}
+}
+
 function sfx(freq=330,dur=.05){
 
  try{
@@ -3612,10 +4948,14 @@ function log(s){
  const b=
   appState.battle;
 
+ if(!b){
+  return;
+ }
+
  b.log.push(s);
+
  renderBattle();
 }
-
 function retire(){
 
  if(
