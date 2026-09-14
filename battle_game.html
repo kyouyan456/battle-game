@@ -3679,6 +3679,25 @@ log(
   return;
  }
 
+ if(
+  t.traits.includes(
+   'あるつはいまー'
+  )
+ ){
+  directDamage(
+   t,
+   5,
+   5,
+   'きせい'
+  );
+
+  log(
+   `${t.name}はあるつはいまーで寄生を忘れた！`
+  );
+
+  return;
+ }
+
  t.parasiteStacks=
   Math.min(
    3,
@@ -3762,21 +3781,42 @@ if(m.special==='rampage'){
    );
  }
 
- if(m.special==='verbalDot'){
+if(m.special==='verbalDot'){
 
-  const t=
-   targets[0];
+ const t=
+  targets[0];
 
-  if(t){
-   t.verbalDot=
-    Math.min(
-     6,
-     t.verbalDot+1
-    );
-  }
+ if(!t){
+  return;
+ }
+
+ if(
+  t.traits.includes(
+   'あるつはいまー'
+  )
+ ){
+  directDamage(
+   t,
+   0,
+   5,
+   'ばとう'
+  );
+
+  log(
+   `${t.name}はあるつはいまーで罵倒を忘れた！`
+  );
 
   return;
  }
+
+ t.verbalDot=
+  Math.min(
+   6,
+   t.verbalDot+1
+  );
+
+ return;
+}
 
  if(m.special==='entangle'){
 
