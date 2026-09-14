@@ -608,117 +608,261 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
 
 @media(max-width:700px){
 
-.battle-stage{
-  position:relative;
-  width:100%;
+  .app{
+    padding:6px;
+  }
 
-  border-radius:18px;
-  overflow:hidden;
+  .battle-stage{
+    width:100%;
+    border-radius:12px;
+  }
 
-  background:#10131a;
+  .battle-view{
+    width:100%;
+    aspect-ratio:3 / 2;
 
-  border:1px solid
-    rgba(255,255,255,.15);
+    padding:6px;
 
-  box-shadow:
-    0 16px 40px
-    rgba(0,0,0,.35);
-}
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
 
-.battle-view{
-  position:relative;
-  width:100%;
+  /* 上部 */
+  .battle-header{
+    margin-bottom:2px;
+    font-size:.72rem;
+  }
 
-  /* 1536×1024と同じ3:2 */
-  aspect-ratio:3 / 2;
+  .battle-header .btn{
+    padding:5px 8px;
+    font-size:.72rem;
+    border-radius:8px;
+  }
 
-  overflow:hidden;
-  padding:12px;
+  /* 敵HUD */
+  .enemy-hud-row{
+    min-height:48px;
+    gap:3px;
+  }
 
-  background-color:#78848b;
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-}
+  .enemy-hud{
+    width:33%;
+    min-width:0;
 
- .enemy-hud{
-  width:33%;
+    display:block;
 
-  grid-template-columns:1fr;
+    padding:4px;
 
-  padding:5px;
- }
+    border-width:1px;
+    border-radius:8px;
+  }
 
- .enemy-hud
- .hud-icon,
- .enemy-hud
- .hud-icon-placeholder{
-  display:none;
- }
+  .enemy-hud .hud-icon,
+  .enemy-hud .hud-icon-placeholder{
+    display:none;
+  }
 
- .mini-stat{
-  grid-template-columns:
-    26px 1fr;
+  .hud-name{
+    font-size:.68rem;
+    margin-bottom:2px;
 
-  font-size:.65rem;
- }
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
 
- .mini-stat
- .stat-number{
-  display:none;
- }
+  .mini-stat{
+    grid-template-columns:24px 1fr;
+    gap:2px;
 
- .battle-field{
-  height:260px;
- }
+    font-size:.55rem;
+  }
 
- .player-sprite-area{
-  width:39%;
- }
+  .mini-stat .stat-number{
+    display:none;
+  }
 
- .enemy-sprite-area{
-  width:60%;
- }
+  .mini-bar{
+    height:5px;
+  }
 
- .sprite-placeholder{
-  width:75px;
-  height:145px;
+  /* 戦場 */
+  .battle-field{
+    height:105px;
+    margin-top:-2px;
+  }
 
-  font-size:.7rem;
- }
+  .player-sprite-area{
+    left:1%;
+    bottom:0;
 
- .player-visual
- .sprite-placeholder{
-  width:115px;
-  height:190px;
- }
+    width:38%;
+    height:100%;
+  }
 
- .battle-message{
-  margin:
-    -5px 2% 8px 28%;
+  .enemy-sprite-area{
+    right:1%;
+    top:4px;
 
-  min-height:75px;
+    width:61%;
+    height:90%;
 
-  padding:
-    14px 34px 14px 14px;
+    gap:1%;
+  }
 
-  font-size:.9rem;
- }
+  .enemy-visual{
+    width:32%;
+  }
 
- .player-hud{
-  width:75%;
+  .sprite-placeholder{
+    width:48px;
+    height:80px;
 
-  grid-template-columns:
-    60px 1fr;
- }
+    border-radius:8px;
+    font-size:.5rem;
+  }
 
- .player-hud
- .hud-icon,
- .player-hud
- .hud-icon-placeholder{
-  width:60px;
-  height:60px;
- }
+  .player-visual .sprite-placeholder{
+    width:70px;
+    height:100px;
+  }
+
+  /* メッセージ */
+  .battle-message{
+    min-height:42px;
+
+    margin:
+      -2px 2% 4px 30%;
+
+    padding:
+      7px 22px 7px 9px;
+
+    border-width:2px;
+    outline-width:1px;
+    border-radius:8px;
+
+    font-size:.68rem;
+    line-height:1.25;
+  }
+
+  .message-next{
+    right:7px;
+    bottom:4px;
+    font-size:.65rem;
+  }
+
+  /* 自分HUD */
+  .player-hud{
+    width:70%;
+    min-height:52px;
+
+    margin-top:0;
+
+    grid-template-columns:
+      38px 1fr;
+
+    gap:5px;
+
+    padding:4px;
+
+    border-width:1px;
+    border-radius:8px;
+  }
+
+  .player-hud .hud-icon,
+  .player-hud .hud-icon-placeholder{
+    width:38px;
+    height:38px;
+
+    border-radius:6px;
+    font-size:.45rem;
+  }
+
+  .player-hud .hud-name{
+    font-size:.68rem;
+  }
+
+  .player-hud .mini-stat{
+    grid-template-columns:
+      22px 1fr;
+
+    font-size:.52rem;
+  }
+
+  .player-hud .small{
+    font-size:.48rem;
+    line-height:1.15;
+  }
+
+  /* 交代 */
+  .battle-switch{
+    margin-top:4px;
+    padding:0 4px;
+    gap:4px;
+  }
+
+  .battle-switch .btn{
+    padding:6px 8px;
+    font-size:.68rem;
+  }
+
+  /* コマンド */
+  .battle-command{
+    margin-top:4px;
+    padding:6px;
+
+    border-radius:10px;
+    border-width:1px;
+  }
+
+  .move-section{
+    margin-top:6px;
+  }
+
+  .move-section:first-child{
+    margin-top:0;
+  }
+
+  .move-section-title{
+    margin:2px 0 4px;
+    padding:4px 6px;
+
+    font-size:.68rem;
+    border-radius:6px;
+  }
+
+  .move-section-grid{
+    grid-template-columns:
+      repeat(2,1fr);
+
+    gap:5px;
+  }
+
+  .move{
+    min-height:46px;
+
+    padding:7px 8px;
+
+    font-size:.68rem;
+    line-height:1.15;
+
+    border-radius:8px;
+  }
+
+  /* キャラ選択 */
+  .character-grid{
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .character{
+    min-height:150px;
+  }
+
+  .small{
+    font-size:.72rem;
+  }
 }
 </style>
 </head>
