@@ -4459,12 +4459,13 @@ function applyDamage(
   src.name
  );
 
+ if(!(p||q)){
+
  animateF(
   t,
-  p||q
-   ?'shake'
-   :'flash'
+  'flash'
  );
+}
 
  if(
   src.traits.includes('かりめん') &&
