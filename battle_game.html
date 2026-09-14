@@ -2166,11 +2166,29 @@ function syncBattleMessages(){
   b.log.length
  ){
 
-  battleMessageQueue.push(
-   b.log[
-    queuedBattleLogCount
-   ]
-  );
+ function log(
+ s,
+ effect=null,
+ side=null,
+ sound=null
+){
+
+ const b=
+  appState.battle;
+
+ if(!b){
+  return;
+ }
+
+ b.log.push({
+  text:s,
+  effect,
+  side,
+  sound
+ });
+
+ renderBattle();
+}
 
   queuedBattleLogCount++;
  }
@@ -2200,20 +2218,55 @@ function showNextBattleMessage(){
 
  battleMessagePlaying=true;
 
- const text=
-  battleMessageQueue.shift();
+ const message=
+ battleMessageQueue.shift();
 
- const box=
-  document.getElementById(
-   'battleMessageText'
-  );
+const box=
+ document.getElementById(
+  'battleMessageText'
+ );
 
- if(box){
+if(box){
 
-  box.textContent=
-   text;
+ box.textContent=
+  typeof message==='string'
+   ?message
+   :message.text;
+}
+
+
+/* メッセージ表示と同時に演出 */
+
+if(
+ typeof message==='object'
+){
+
+ if(
+  message.effect!==null &&
+  message.side!==null
+ ){
+
+  const fighter=
+   allActive().find(
+    f=>f.side===message.side
+   );
+
+  if(fighter){
+
+   animateF(
+    fighter,
+    message.effect
+   );
+  }
  }
 
+ if(message.sound){
+
+  playBattleSound(
+   message.sound
+  );
+ }
+}
  if(battleMessageTimer){
 
   clearTimeout(
@@ -4010,29 +4063,37 @@ if(m.allTargets){
    );
  }
 
- if(m.healHp){
-  f.hp=
-   Math.min(
-    f.maxHp,
-    f.hp+m.healHp
-   );
-   animateF(
- f,
- 'heal'
-);
- }
+if(m.healHp){
 
- if(m.healMental){
-  f.mental=
-   Math.min(
-    f.maxMental,
-    f.mental+m.healMental
-   );
-animateF(
- f,
- 'heal'
-); }
+ f.hp=
+  Math.min(
+   f.maxHp,
+   f.hp+m.healHp
+  );
 
+ log(
+  `${f.name}のHPが${m.healHp}回復した！`,
+  'heal',
+  f.side,
+  'heal'
+ );
+}
+
+if(m.healMental){
+
+ f.mental=
+  Math.min(
+   f.maxMental,
+   f.mental+m.healMental
+  );
+
+ log(
+  `${f.name}の精神が${m.healMental}回復した！`,
+  'heal',
+  f.side,
+  'heal'
+ );
+}
  if(m.mpGain){
   f.mp=
    Math.min(
@@ -4059,33 +4120,43 @@ animateF(
 if(m.buffPhysicalNext){
 
  f.physicalBuff*=
-  m.buffPhysicalNext;animateF(
- f,
- 'buff'
-);
-}
+  m.buffPhysicalNext;
 
+ log(
+  `${f.name}の物理攻撃力が上がった！`,
+  'buff',
+  f.side,
+  'buff'
+ );
+}
 if(m.buffMentalNext){
 
  f.mentalBuff*=
-  m.buffMentalNext;animateF(
- f,
- 'buff'
-);
+  m.buffMentalNext;
+
+ log(
+  `${f.name}の精神攻撃力が上がった！`,
+  'buff',
+  f.side,
+  'buff'
+ );
 }
 
- if(
-  m.debuffEnemyMentalAtk &&
-  targets[0]
- ){
-  targets[0].nextM*=
-   m.debuffEnemyMentalAtk;animateF(
- targets[0],
- 'debuff'
-);
- }
-}
+if(
+ m.debuffEnemyMentalAtk &&
+ targets[0]
+){
 
+ targets[0].nextM*=
+  m.debuffEnemyMentalAtk;
+
+ log(
+  `${targets[0].name}の精神攻撃力が下がった！`,
+  'debuff',
+  targets[0].side,
+  'debuff'
+ );
+}
 function effectiveCost(f,c){
 
  if(
@@ -4534,19 +4605,13 @@ function directDamage(
      :''
    }`+
    ` (${why})`
-  );
-
-  setTimeout(
-   ()=>{
-    animateF(
-     t,
-     'damage'
-    );
-   },
-   0
+  'damage',
+   t.side,
+   'damage'
   );
  }
 }
+  
 
 function animateF(
  f,
@@ -4966,7 +5031,12 @@ function sfx(freq=330,dur=.05){
  }catch(e){}
 }
 
-function log(s){
+function log(
+ s,
+ effect=null,
+ side=null,
+ sound=null
+){
 
  const b=
   appState.battle;
@@ -4975,7 +5045,12 @@ function log(s){
   return;
  }
 
- b.log.push(s);
+ b.log.push({
+  text:s,
+  effect,
+  side,
+  sound
+ });
 
  renderBattle();
 }
