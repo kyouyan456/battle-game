@@ -2049,10 +2049,10 @@ function beginTurn(){
  if(
  f.traits.includes('むげん成長')
 ){
- f.growthP*=1.1;
- f.growthM*=1.1;
+ f.growthP*=1.07;
+ f.growthM*=1.07;
 
- f.maxHp-=2;
+ f.maxHp=-2;
  f.hp=Math.min(f.hp,f.maxHp);
 
  f.maxMp+=1;
