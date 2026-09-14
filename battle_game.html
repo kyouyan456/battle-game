@@ -2191,6 +2191,10 @@ function showNextBattleMessage(){
 
   battleMessagePlaying=false;
 
+  battleMessageTimer=null;
+
+  renderMoves();
+
   return;
  }
 
@@ -2224,7 +2228,7 @@ function showNextBattleMessage(){
 
     showNextBattleMessage();
    },
-   1100
+   2000
   );
 }
 
@@ -2244,6 +2248,15 @@ function advanceBattleMessage(){
 
  showNextBattleMessage();
 }
+
+  function battleMessageBusy(){
+
+ return (
+  battleMessagePlaying ||
+  battleMessageQueue.length>0
+ );
+}
+
 function renderBattle(){
 
  const b=
@@ -2543,6 +2556,15 @@ function renderMoves(){
  if(!f||!f.alive){
   return;
  }
+  if(
+ battleMessageBusy()
+){
+ box.innerHTML=
+  '<button class="btn" disabled>メッセージ表示中…</button>';
+
+ return;
+}
+
 
  if(
   appState.connection==='friend' &&
