@@ -606,8 +606,8 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
    スマホ
 ========================= */
 
-@media(max-width:1000px){
-
+@media (max-width:1000px),
+       (hover:none) and (pointer:coarse){
  html,
 body{
   width:100%;
@@ -2062,10 +2062,10 @@ function beginTurn(){
  if(
  f.traits.includes('むげん成長')
 ){
- f.growthP*=1.07;
- f.growthM*=1.07;
+ f.growthP*=1.08;
+ f.growthM*=1.08;
 
- f.maxHp=-2;
+ f.maxHp-=4;
  f.hp=Math.min(f.hp,f.maxHp);
 
  f.maxMp+=1;
