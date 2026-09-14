@@ -606,24 +606,37 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
    スマホ
 ========================= */
 
-@media(max-width:700px){
+@media(max-width:1000px){
 
-  .app{
-    padding:6px;
-  }
+ html,
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
 
-  .battle-stage{
-    width:100%;
-    border-radius:12px;
-  }
+.app{
+  width:100%;
+  max-width:100%;
+  padding:6px;
+}
 
+#battle{
+  width:100%;
+  max-width:100%;
+}
+
+.battle-stage{
+  width:100%;
+  max-width:100%;
+}
   .battle-view{
     width:100%;
     aspect-ratio:3 / 2;
 
     padding:6px;
 
-  background-size:contain;
+  background-size:cover;
 background-color:#10131a;
     background-position:center;
     background-repeat:no-repeat;
