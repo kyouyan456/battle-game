@@ -5,6 +5,12 @@ const crypto = require("crypto");
 const { WebSocketServer, WebSocket } = require("ws");
 
 const app = express();
+
+/* HTMLと同じ場所にある画像などを配信 */
+app.use(
+  express.static(__dirname)
+);
+
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
