@@ -1191,7 +1191,7 @@ const moveBook={
 
 const chars=[
 {name:'KK',hp:80,mental:110,mp:10,races:['びびゅつか','ゆうれいぶいん'],traits:['しきもう','ふきんしん','なぞのこうい','じーぴーえー','うんどうおんち'],moves:{'ガンダム':{mp:8,special:'gundam'},'みつぞうしゅ':{healHp:20},'たけやまバズーカ':{mp:2,physical:20,priority:true},...pick(['れいしょう','わるだくみ','しんれいげんしょう','おえかき','べんきょう','いんしゅ'])}},
-{name:'あさと',hp:120,mental:80,mp:8,races:['ひばくしゃ','ろうにんせい'],traits:['あるくTDL','無神経','むげん成長','ぼうず','びびり','まゆなし'],moves:{'ピカドンボイス':{mp:8,physical:50,mental:10,selfHp:-10,tags:['おと']},'ろうにんせいかつ':{mp:1,healHp:10,mpGain:3,selfMental:-5},...pick(['からて','おおごえ','れいしょう','たどうしょう','べんきょう'])}},
+{name:'あさと',hp:120,mental:80,mp:8,races:['ひばくしゃ','ろうにんせい'],traits:['あるくTDL','無神経','むげん成長','ぼうず','びびり','まゆなし'],moves:{'ピカドンボイス':{mp:8,physical:40,mental:10,selfHp:-10,tags:['おと']},'ろうにんせいかつ':{mp:1,healHp:10,mpGain:3,selfMental:-5},...pick(['からて','おおごえ','れいしょう','たどうしょう','べんきょう'])}},
 {name:'うい',hp:110,mental:110,mp:9,races:['きつえんしゃ'],traits:['うわきしょう','だんそんじょひ','れいしょうけい'],moves:{'うわき':{mp:3,special:'affair'},...pick(['おおごえ','やすむ','からて','れいしょう','たどうしょう','べんきょう','きつえん','いんしゅ','わるだくみ','ちーといつ'])}},
 {name:'みまや',hp:115,mental:95,mp:8,races:['うまづら','きつえんしゃ','たんきだいがく'],traits:['うわきしょう','ギャンブラー','えんきんほう','めめしい'],moves:{'あばれうま':{special:'rampage'},...pick(['たどうしょう','おおごえ','きつえん','いんしゅ','投資','ギャンブル'])}},
 {name:'ゆうま',hp:110,mental:100,mp:7,races:['ろうじん','あるちゅう'],traits:['ボケ','ギャンブラー','しらが','あかいろ','むしば','あるつはいまー'],moves:{'ペンキばくはつ':{mp:3,physical:5,mental:50,tags:['いろ'],allTargets:true},'せいり':{mp:5,special:'seiri'},...pick(['いんしゅ','とうし','ぎゃんぶる','べんきょう','おえかき','さっかー'])}},
@@ -1627,6 +1627,9 @@ mentalBuff:1,
 
 growthP:1,
 growthM:1,
+
+dualPhysical:1,
+dualMental:1,
 
 veilBoost:0,
 parasiteStacks:0,
@@ -2071,6 +2074,20 @@ function beginTurn(){
    f.mentalBuff*=1.2;
   }
 
+// にじゅうじんかく
+f.dualPhysical = 1;
+f.dualMental = 1;
+
+if(f.traits.includes('にじゅうじんかく')){
+  if(Math.random() < 0.5){
+    f.dualPhysical = 1.2;
+    f.dualMental = 0.7;
+  }else{
+    f.dualPhysical = 0.7;
+    f.dualMental = 1.2;
+  }
+}
+   
  if(
  f.traits.includes('むげん成長')
 ){
