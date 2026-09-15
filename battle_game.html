@@ -1904,12 +1904,7 @@ function runOnlineTurn(actions){
 
  prepareTurnActions(acts);
 
- acts.sort(
-  (x,y)=>
-   priorityScore(y)-
-   priorityScore(x)||
-   Math.random()-.5
- );
+ acts.sort(compareTurnOrder);
 
  for(const x of acts){
 
@@ -3512,12 +3507,7 @@ function runTurn(player){
  }
 
 prepareTurnActions(acts);
- acts.sort(
-  (x,y)=>
-   priorityScore(y)-
-   priorityScore(x)||
-   Math.random()-.5
- );
+acts.sort(compareTurnOrder);
 
  for(const x of acts){
 
@@ -3592,6 +3582,44 @@ function priorityScore(x){
  return 0;
 }
 
+ function compareTurnOrder(x,y){
+
+ const px=priorityScore(x);
+ const py=priorityScore(y);
+
+ // 優先度が違う場合は従来通り
+ if(px!==py){
+  return py-px;
+ }
+
+ const xe=
+  (x.f.entangled||0)>0;
+
+ const ye=
+  (y.f.entangled||0)>0;
+
+ // xだけ「からみつく」状態
+ // xが先行20%、yが先行80%
+ if(xe&&!ye){
+  return Math.random()<0.2
+   ?-1
+   :1;
+ }
+
+ // yだけ「からみつく」状態
+ // yが先行20%、xが先行80%
+ if(!xe&&ye){
+  return Math.random()<0.2
+   ?1
+   :-1;
+ }
+
+ // 両方同じ状態なら50:50
+ return Math.random()<0.5
+  ?-1
+  :1;
+} 
+  
 function executeAction(f,a,targets){
 
  if(a.type==='none'){
@@ -4972,12 +5000,16 @@ if(t){
    }
   }
 
-  if(f.rampage>0){
+   if(f.rampage>0){
    f.rampage--;
   }
 
+  if(f.entangled>0){
+   f.entangled--;
+  }
+
   f.guard=0;
-f.dodging=false;
+  f.dodging=false;
 
 f.nextP=1;
 f.nextM=1;
