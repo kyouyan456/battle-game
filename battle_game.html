@@ -1904,8 +1904,7 @@ function runOnlineTurn(actions){
 
  prepareTurnActions(acts);
 
- acts.sort(compareTurnOrder);
-
+acts=sortTurnActions(acts);
  for(const x of acts){
 
   if(!x.f.alive){
@@ -3507,7 +3506,7 @@ function runTurn(player){
  }
 
 prepareTurnActions(acts);
-acts.sort(compareTurnOrder);
+acts=sortTurnActions(acts);
 
  for(const x of acts){
 
@@ -3582,43 +3581,181 @@ function priorityScore(x){
  return 0;
 }
 
- function compareTurnOrder(x,y){
+function shuffleTurnGroup(group){
 
- const px=priorityScore(x);
- const py=priorityScore(y);
+ const a=[...group];
 
- // 優先度が違う場合は従来通り
- if(px!==py){
-  return py-px;
+ for(let i=a.length-1;i>0;i--){
+
+  const j=
+   Math.floor(
+    Math.random()*(i+1)
+   );
+
+  [a[i],a[j]]=
+   [a[j],a[i]];
  }
 
- const xe=
-  (x.f.entangled||0)>0;
+ return a;
+}
 
- const ye=
-  (y.f.entangled||0)>0;
 
- // xだけ「からみつく」状態
- // xが先行20%、yが先行80%
- if(xe&&!ye){
-  return Math.random()<0.2
-   ?-1
-   :1;
+function sortTurnActions(acts){
+
+ // priorityScoreごとに分類
+ const groups=new Map();
+
+ for(const x of acts){
+
+  const p=
+   priorityScore(x);
+
+  if(!groups.has(p)){
+   groups.set(p,[]);
+  }
+
+  groups.get(p).push(x);
  }
 
- // yだけ「からみつく」状態
- // yが先行20%、xが先行80%
- if(!xe&&ye){
-  return Math.random()<0.2
-   ?1
-   :-1;
+ // 優先度が高い順
+ const priorities=
+  [...groups.keys()]
+   .sort((a,b)=>b-a);
+
+ const result=[];
+
+ for(const p of priorities){
+
+  let group=
+   groups.get(p);
+
+  // 1人ならそのまま
+  if(group.length<=1){
+
+   result.push(...group);
+
+   continue;
+  }
+
+  // まず通常キャラをランダムに並べる
+  const normal=
+   shuffleTurnGroup(
+    group.filter(
+     x=>
+      (x.f.entangled||0)<=0
+    )
+   );
+
+  // からみつかれているキャラ
+  const entangled=
+   shuffleTurnGroup(
+    group.filter(
+     x=>
+      (x.f.entangled||0)>0
+    )
+   );
+
+  /*
+   からみつきがいない場合は
+   普通のランダム順
+  */
+  if(!entangled.length){
+
+   result.push(
+    ...shuffleTurnGroup(group)
+   );
+
+   continue;
+  }
+
+  /*
+   2人だけの場合
+
+   からみつかれた側：
+   20%で先行
+   80%で後攻
+  */
+  if(
+   group.length===2 &&
+   entangled.length===1
+  ){
+
+   const e=
+    entangled[0];
+
+   const n=
+    normal[0];
+
+   if(Math.random()<0.2){
+
+    result.push(
+     e,
+     n
+    );
+
+   }else{
+
+    result.push(
+     n,
+     e
+    );
+   }
+
+   continue;
+  }
+
+  /*
+   乱闘など3人以上。
+
+   からみつかれたキャラを
+   1人ずつ配置する。
+  */
+  let ordered=[
+   ...normal
+  ];
+
+  for(const e of entangled){
+
+   if(ordered.length===0){
+
+    ordered.push(e);
+
+    continue;
+   }
+
+   if(Math.random()<0.8){
+
+    // 80%で最後
+    ordered.push(e);
+
+   }else{
+
+    /*
+     残り20%では
+     「最後以外」の位置を均等抽選
+    */
+
+    const position=
+     Math.floor(
+      Math.random()*
+      ordered.length
+     );
+
+    ordered.splice(
+     position,
+     0,
+     e
+    );
+   }
+  }
+
+  result.push(
+   ...ordered
+  );
  }
 
- // 両方同じ状態なら50:50
- return Math.random()<0.5
-  ?-1
-  :1;
-} 
+ return result;
+}
   
 function executeAction(f,a,targets){
 
