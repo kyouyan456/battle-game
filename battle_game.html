@@ -1468,21 +1468,39 @@ function handleOnlineMessage(data){
   broadcastBattleState();
  }
 
- if(data.type==='battle_state'){
-  appState.battle=data.battle;
-  onlineWaitingAction=false;
+if(data.type==='battle_state'){
 
-  show('battle');
+ appState.battle=data.battle;
+ onlineWaitingAction=false;
+
+ show('battle');
+
+ /*
+  ホストから終了済み戦闘が届いても
+  即リザルトには移動しない。
+ */
+ if(appState.battle.finished){
+
+  pendingBattleResult={
+   text:
+    appState.battle.winnerOwnerId===
+    onlinePlayerId
+     ?'勝利'
+     :'敗北',
+
+   winnerOwnerId:
+    appState.battle.winnerOwnerId
+  };
+
   renderBattle();
 
-  if(appState.battle.finished){
-   showOnlineResult();
-   return;
-  }
-
-  maybeAutoOnlineAction();
+  return;
  }
 
+ renderBattle();
+
+ maybeAutoOnlineAction();
+}
  if(data.type==='player_left'){
   alert('参加者が退出しました。');
  }
@@ -2521,18 +2539,24 @@ function showNextBattleMessage(){
    結果画面へ移動
   */
   if(
-   pendingBattleResult
-  ){
+ pendingBattleResult
+){
 
-   const result=
-    pendingBattleResult;
+ const result=
+  pendingBattleResult;
 
-   pendingBattleResult=null;
+ pendingBattleResult=null;
 
-   document.getElementById(
-    'resultText'
-   ).textContent=
-    result.text;
+ /*
+  最後の「倒れた。」をクリックした後
+  ここに来た時点で戦闘BGM停止
+ */
+ stopBattleBgm();
+
+ document.getElementById(
+  'resultText'
+ ).textContent=
+  result.text;
 
    sfx(
     result.text==='勝利'
@@ -2576,10 +2600,70 @@ if(
  typeof message==='object'
 ){
 
+ /*
+  ダメージメッセージが表示された瞬間に
+  対象の表示ゲージを実値へ更新
+ */
+ if(
+  message.syncStats &&
+  message.side!==null
+ ){
+
+  const b=
+   appState.battle;
+
+  if(b){
+
+   for(const team of b.teams){
+
+    for(const f of team){
+
+     if(f.side===message.side){
+
+      f.displayHp=f.hp;
+      f.displayMental=f.mental;
+     }
+    }
+   }
+
+   /*
+    renderBattle()をここで呼ぶと
+    メッセージ処理が再帰するので、
+    HUDだけ再描画させるため
+    requestAnimationFrameで遅らせる
+   */
+   requestAnimationFrame(()=>{
+    renderBattle();
+   });
+  }
+ }
+
  if(
   message.effect!==null &&
   message.side!==null
  ){
+
+  const fighter=
+   allActive().find(
+    f=>f.side===message.side
+   );
+
+  if(fighter){
+
+   animateF(
+    fighter,
+    message.effect
+   );
+  }
+ }
+
+ if(message.sound){
+
+  playBattleSound(
+   message.sound
+  );
+ }
+}
 
   const fighter=
    allActive().find(
@@ -5204,20 +5288,21 @@ function directDamage(
  ){
 
   log(
-   `${t.name}に`+
-   `${p
-     ?` HP-${Math.round(p)}`
-     :''
-   }`+
-   `${q
-     ?` 精神-${Math.round(q)}`
-     :''
-   }`+
-   ` (${why})`,
-  'damage',
-   t.side,
-   'damage'
-  );
+ `${t.name}に`+
+ `${p
+   ?` HP-${Math.round(p)}`
+   :''
+ }`+
+ `${q
+   ?` 精神-${Math.round(q)}`
+   :''
+ }`+
+ ` (${why})`,
+ 'damage',
+ t.side,
+ 'damage',
+ true
+);
  }
 }
   
@@ -5366,14 +5451,7 @@ f.nextM=1;
 f.plannedAction=null;
  }
 
-/* ターン終了時に表示ゲージを実際の値へ同期 */
-syncDisplayedStats();
-for(const team of b.teams){
- for(const f of team){
-  f.displayHp=f.hp;
-  f.displayMental=f.mental;
- }
-}
+
 checkDeaths();
 
 if(b.finished){
@@ -5412,8 +5490,7 @@ function checkDeaths(){
    f.alive=false;
    f.hp=Math.max(0,f.hp);
    f.mental=Math.max(0,f.mental);
-    f.displayHp=f.hp;
-f.displayMental=f.mental;
+   
 
    if(f.hp<=0){
 
@@ -5556,17 +5633,12 @@ function finish(
 
  b.finished=true;
 
-  b.finished=true;
-
- stopBattleBgm();
-
  b.winnerOwnerId=
   winnerOwnerId;
 
  /*
-  ここでは結果画面へ移動しない。
-  最後の戦闘メッセージを
-  読み終わるまで待つ。
+  ここではBGMを止めない。
+  「倒れた。」をクリックするまで継続。
  */
  pendingBattleResult={
   text:txt,
@@ -5575,7 +5647,6 @@ function finish(
 
  renderBattle();
 }
-
 function applyUniqueFaith(f){
 
  if(
@@ -5700,7 +5771,8 @@ function log(
  s,
  effect=null,
  side=null,
- sound=null
+ sound=null,
+ syncStats=false
 ){
 
  const b=
@@ -5714,7 +5786,8 @@ function log(
   text:s,
   effect,
   side,
-  sound
+  sound,
+  syncStats
  });
 
  renderBattle();
