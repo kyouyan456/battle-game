@@ -1194,6 +1194,30 @@ const battleAssets={
   victory:''
  }
 };
+
+/* =========================
+   戦闘BGM
+========================= */
+
+const battleBgm = new Audio('bgm/battle.mp3');
+
+battleBgm.loop = true;
+battleBgm.volume = 0.35;
+
+function startBattleBgm(){
+
+ battleBgm.currentTime = 0;
+
+ battleBgm.play().catch(()=>{
+  // ブラウザに自動再生を止められた場合
+ });
+}
+
+function stopBattleBgm(){
+
+ battleBgm.pause();
+ battleBgm.currentTime = 0;
+}
 const P={normal:.5,low:.25,evasion:.25,accident:.25};
 
 const commonMoves={
@@ -1411,8 +1435,10 @@ function handleOnlineMessage(data){
   appState.mode=data.mode;
   onlineWaitingAction=false;
 
-  buildOnlineBattle(data.players,data.mode);
+   buildOnlineBattle(data.players,data.mode);
   show('battle');
+
+  startBattleBgm();
 
   if(isOnlineHost()){
    beginTurn();
@@ -1836,7 +1862,10 @@ resetBattleMessages();
   lastSetup:null
  };
 
- show('battle');
+  show('battle');
+
+ startBattleBgm();
+
  beginTurn();
 }
 
@@ -5527,6 +5556,10 @@ function finish(
 
  b.finished=true;
 
+  b.finished=true;
+
+ stopBattleBgm();
+
  b.winnerOwnerId=
   winnerOwnerId;
 
@@ -5696,6 +5729,7 @@ function retire(){
   );
  }
 
+  stopBattleBgm();
  show('home');
 }
 
