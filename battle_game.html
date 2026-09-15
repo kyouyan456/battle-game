@@ -2525,38 +2525,35 @@ function syncBattleMessages(){
 
 function showNextBattleMessage(){
 
- if(
-  !battleMessageQueue.length
- ){
+ /*
+  =========================
+  キューが空
+  =========================
+ */
+
+ if(!battleMessageQueue.length){
 
   battleMessagePlaying=false;
-
   battleMessageTimer=null;
 
   /*
-   戦闘終了済みなら
-   最後のメッセージを読み終わった後に
-   結果画面へ移動
+   戦闘終了済みなら、
+   最後の「倒れた。」をクリックしたあと
+   リザルトへ進む
   */
-  if(
- pendingBattleResult
-){
+  if(pendingBattleResult){
 
- const result=
-  pendingBattleResult;
+   const result=
+    pendingBattleResult;
 
- pendingBattleResult=null;
+   pendingBattleResult=null;
 
- /*
-  最後の「倒れた。」をクリックした後
-  ここに来た時点で戦闘BGM停止
- */
- stopBattleBgm();
+   stopBattleBgm();
 
- document.getElementById(
-  'resultText'
- ).textContent=
-  result.text;
+   document.getElementById(
+    'resultText'
+   ).textContent=
+    result.text;
 
    sfx(
     result.text==='勝利'
@@ -2575,148 +2572,185 @@ function showNextBattleMessage(){
   return;
  }
 
+
+ /*
+  =========================
+  次のメッセージを表示
+  =========================
+ */
+
  battleMessagePlaying=true;
 
  const message=
- battleMessageQueue.shift();
+  battleMessageQueue.shift();
 
-const box=
- document.getElementById(
-  'battleMessageText'
- );
+ const box=
+  document.getElementById(
+   'battleMessageText'
+  );
 
-if(box){
+ if(box){
 
- box.textContent=
-  typeof message==='string'
-   ?message
-   :message.text;
-}
+  box.textContent=
+   typeof message==='string'
+    ?message
+    :message.text;
+ }
 
-
-/* メッセージ表示と同時に演出 */
-
-if(
- typeof message==='object'
-){
 
  /*
-  ダメージメッセージが表示された瞬間に
-  対象の表示ゲージを実値へ更新
+  =========================
+  メッセージに同期した処理
+  =========================
  */
+
  if(
-  message.syncStats &&
-  message.side!==null
+  typeof message==='object'
  ){
 
-  const b=
-   appState.battle;
+  /*
+   このダメージが発生した
+   「その瞬間」のHP・精神へ
+   表示ゲージを進める
+  */
+  if(
+   message.displayStats &&
+   message.side!==null
+  ){
 
-  if(b){
+   const b=
+    appState.battle;
 
-   for(const team of b.teams){
+   if(b){
 
-    for(const f of team){
+    const fighter=
+     b.teams
+      .flat()
+      .find(
+       f=>
+        f.side===
+        message.side
+      );
 
-     if(f.side===message.side){
+    if(fighter){
 
-      f.displayHp=f.hp;
-      f.displayMental=f.mental;
-     }
+     fighter.displayHp=
+      message.displayStats.hp;
+
+     fighter.displayMental=
+      message.displayStats.mental;
     }
+
+    /*
+     HUDを再描画。
+     現在のメッセージ処理と
+     ぶつからないよう1フレーム後。
+    */
+    requestAnimationFrame(
+     ()=>{
+      renderBattle();
+     }
+    );
    }
-
-   /*
-    renderBattle()をここで呼ぶと
-    メッセージ処理が再帰するので、
-    HUDだけ再描画させるため
-    requestAnimationFrameで遅らせる
-   */
-   requestAnimationFrame(()=>{
-    renderBattle();
-   });
   }
- }
 
- if(
-  message.effect!==null &&
-  message.side!==null
- ){
 
-  const fighter=
-   allActive().find(
-    f=>f.side===message.side
-   );
+  /*
+   =========================
+   エフェクト
+   =========================
+  */
 
-  if(fighter){
+  if(
+   message.effect &&
+   message.side!==null
+  ){
 
-   animateF(
-    fighter,
-    message.effect
-   );
+   const fighter=
+    allActive().find(
+     f=>
+      f.side===
+      message.side
+    );
+
+   if(fighter){
+
+    animateF(
+     fighter,
+     message.effect
+    );
+   }
   }
- }
 
- if(message.sound){
 
-  playBattleSound(
-   message.sound
-  );
- }
-}
+  /*
+   =========================
+   効果音
+   =========================
+  */
 
-  const fighter=
-   allActive().find(
-    f=>f.side===message.side
-   );
+  if(message.sound){
 
-  if(fighter){
-
-   animateF(
-    fighter,
-    message.effect
+   playBattleSound(
+    message.sound
    );
   }
  }
 
- if(message.sound){
 
-  playBattleSound(
-   message.sound
-  );
- }
-}
+ /*
+  以前のタイマーが残っていたら削除
+ */
  if(battleMessageTimer){
 
   clearTimeout(
    battleMessageTimer
   );
+
+  battleMessageTimer=null;
  }
 
-/*
- 戦闘終了後の最後のメッセージは
- 自動送りしない。
- プレイヤーのクリックを待つ。
-*/
-if(
- pendingBattleResult &&
- battleMessageQueue.length===0
-){
- battleMessageTimer=null;
- return;
+
+ /*
+  =========================
+  戦闘終了時
+
+  最後の「○○は倒れた。」では
+  自動送りしない。
+  クリックを待つ。
+  =========================
+ */
+
+ if(
+  pendingBattleResult &&
+  battleMessageQueue.length===0
+ ){
+
+  battleMessageTimer=null;
+
+  return;
+ }
+
+
+ /*
+  =========================
+  通常メッセージ
+  2.8秒後に次へ
+  =========================
+ */
+
+ battleMessageTimer=
+  setTimeout(
+   ()=>{
+
+    battleMessagePlaying=false;
+
+    showNextBattleMessage();
+
+   },
+   2800
+  );
 }
-
-battleMessageTimer=
- setTimeout(
-  ()=>{
-   battleMessagePlaying=false;
-   showNextBattleMessage();
-  },
-  2800
- );
-}
-
-
 function advanceBattleMessage(){
 
  if(battleMessageTimer){
@@ -5272,40 +5306,62 @@ function directDamage(
  why
 ){
 
- t.hp-=
-  Math.round(
-   p||0
+ const hpDamage=
+  Math.round(p||0);
+
+ const mentalDamage=
+  Math.round(q||0);
+
+ t.hp-=hpDamage;
+ t.mental-=mentalDamage;
+
+ /*
+  このダメージが入った
+  「直後」の値を保存する。
+
+  重要：
+  後で現在値を読むのではなく、
+  この瞬間のHP・精神をログに記録する。
+ */
+ const displayHpAfter=
+  Math.max(
+   0,
+   t.hp
   );
 
- t.mental-=
-  Math.round(
-   q||0
+ const displayMentalAfter=
+  Math.max(
+   0,
+   t.mental
   );
 
  if(
-  (p||q)&&
+  (hpDamage||mentalDamage) &&
   why
  ){
 
   log(
- `${t.name}に`+
- `${p
-   ?` HP-${Math.round(p)}`
-   :''
- }`+
- `${q
-   ?` 精神-${Math.round(q)}`
-   :''
- }`+
- ` (${why})`,
- 'damage',
- t.side,
- 'damage',
- true
-);
+   `${t.name}に`+
+   `${hpDamage
+     ?` HP-${hpDamage}`
+     :''
+   }`+
+   `${mentalDamage
+     ?` 精神-${mentalDamage}`
+     :''
+   }`+
+   ` (${why})`,
+   'damage',
+   t.side,
+   'damage',
+   false,
+   {
+    hp:displayHpAfter,
+    mental:displayMentalAfter
+   }
+  );
  }
 }
-  
 
 function animateF(
  f,
@@ -5772,8 +5828,28 @@ function log(
  effect=null,
  side=null,
  sound=null,
- syncStats=false
+ syncStats=false,
+ displayStats=null
 ){
+
+ const b=
+  appState.battle;
+
+ if(!b){
+  return;
+ }
+
+ b.log.push({
+  text:s,
+  effect,
+  side,
+  sound,
+  syncStats,
+  displayStats
+ });
+
+ renderBattle();
+}
 
  const b=
   appState.battle;
