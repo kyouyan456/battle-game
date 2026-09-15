@@ -4262,7 +4262,12 @@ if(m.special==='verbalDot'){
 
    log('投資成功');
   }else{
-   f.mp-=5;
+   f.mp=
+    Math.max(
+     0,
+     f.mp-5
+    );
+
    log('投資失敗');
   }
 
@@ -4283,7 +4288,7 @@ if(m.special==='verbalDot'){
    if(ok){
     dmg*=1.5;
    }else{
-    f.mp-=5;
+   f.mp=Math.max(0,f.mp-5);
    }
   }
 
