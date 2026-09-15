@@ -4479,7 +4479,7 @@ function applyDamage(
   p*=src.nextP||1;
   p*=src.physicalBuff||1;
   p*=src.growthP||1;
-
+p*=src.dualPhysical||1;
   if(
    src.traits.includes('うんどうおんち')
   ){
@@ -4568,6 +4568,7 @@ function applyDamage(
   q*=src.mentalBuff||1;
   q*=src.growthM||1;
   q*=src.halalMentalMul||1;
+   q*=src.dualMental||1;
 
   if(
    src.traits.includes('ふきんしん')
