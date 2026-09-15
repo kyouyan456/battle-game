@@ -1195,7 +1195,7 @@ const chars=[
 {name:'うい',hp:110,mental:110,mp:9,races:['きつえんしゃ'],traits:['うわきしょう','だんそんじょひ','れいしょうけい'],moves:{'うわき':{mp:3,special:'affair'},...pick(['おおごえ','やすむ','からて','れいしょう','たどうしょう','べんきょう','きつえん','いんしゅ','わるだくみ','ちーといつ'])}},
 {name:'みまや',hp:115,mental:95,mp:8,races:['うまづら','きつえんしゃ','たんきだいがく'],traits:['うわきしょう','ギャンブラー','えんきんほう','めめしい'],moves:{'あばれうま':{special:'rampage'},...pick(['たどうしょう','おおごえ','きつえん','いんしゅ','投資','ギャンブル'])}},
 {name:'ゆうま',hp:110,mental:100,mp:7,races:['ろうじん','あるちゅう'],traits:['ボケ','ギャンブラー','しらが','あかいろ','むしば','あるつはいまー'],moves:{'ペンキばくはつ':{mp:3,physical:5,mental:50,tags:['いろ'],allTargets:true},'せいり':{mp:5,special:'seiri'},...pick(['いんしゅ','とうし','ぎゃんぶる','べんきょう','おえかき','さっかー'])}},
-{name:'れんたろう',hp:110,mental:90,mp:6,races:['おんがくか','fラン'],traits:['わがまま','おやのななひかり','くろいろ','じゅんあい'],moves:{'どくそう':{mp:2,physical:10,mental:20,tags:['おと']},'まいご':{special:'lost'},'ついんぶらっく':{mp:1,multi:[10,10],tags:['いろ']},'はるか':{mp:6,special:'haruka'},...pick(['たどうしょう','おおごえ','さっかー','えんそう'])}},
+{name:'れんたろう',hp:110,mental:90,mp:6,races:['おんがくか','fラン'],traits:['わがまま','おやのななひかり','くろいろ','じゅんあい'],moves:{'どくそう':{mp:2,physical:10,mental:20,tags:['おと']},'まいご':{mp:1,special:'lost'},'ついんぶらっく':{mp:1,multi:[10,10],tags:['いろ']},'はるか':{mp:6,special:'haruka'},...pick(['たどうしょう','おおごえ','さっかー','えんそう'])}},
 {name:'まっすー',hp:90,mental:90,mp:9,races:['もじゃもじゃ'],traits:['どくぜつ','びびり','ちゅうそつのいでんし','にじゅうじんかく'],moves:{'きれる':{mp:5,buffPhysicalNext:1.5,buffMentalNext:1.5},'ばとう':{mp:3,special:'verbalDot'},'からみつく':{mp:2,special:'entangle'},...pick(['れいしょう','べんきょう','ギャンブル'])}},
 {name:'まさや',hp:150,mental:90,mp:5,races:['デブ','らぐびーぶ'],traits:['ごうまん','かりめん','あくしゅう','きょたい'],moves:{'だっぷん':{mp:4,special:'poop'},'ねんてん':{mp:1,selfHp:-50,special:'mentalResistStack'},'ばいとテロ':{mp:3,physical:10,mental:10,special:'elderDouble'},...pick(['タックル','べんきょう','ギャンブル','いんしゅ','さっかー','ラップ'])}},
 {name:'さとけい',hp:100,mental:100,mp:8,races:['ふつう'],traits:['いぬけい','じんだいのかこい'],moves:{'えんげき':{mp:1,special:'copy',copyPriority:true},'いぬ':{selfMental:-10,special:'dogGuard'},...pick(['おおごえ','さっかー','べんきょう','ちーといつ','れいしょう','おうと'])}},
@@ -3431,11 +3431,16 @@ function prepareDefenseMove(f,m){
    m.guard||10;
  }
 
- if(
-  m.special==='dogGuard' ||
-  m.special==='lost'
+if(
+  m.special==='dogGuard'
  ){
   f.guard=9999;
+ }
+
+if(
+  m.special==='lost'
+ ){
+  f.dodging=true;
  }
 
  if(m.special==='dodge'){
@@ -4379,18 +4384,21 @@ if(m.special==='verbalDot'){
   return;
  }
 
- if(m.special==='lost'){
+if(m.special==='lost'){
 
   if(
    targets[0] &&
    Math.random()<P.normal
   ){
-   targets[0].nextM*=1.2;
+   targets[0].mentalBuff*=1.2;
+
+   log(
+    `${targets[0].name}の精神攻撃力が1.2倍になった！`
+   );
   }
 
   return;
- }
-
+}
  if(m.special==='poop'){
 
   for(const t of allActive()){
