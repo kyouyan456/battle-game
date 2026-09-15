@@ -5154,7 +5154,29 @@ function animateF(
   550
  );
 }
+function syncDisplayedStats(){
 
+ const b=
+  appState.battle;
+
+ if(!b){
+  return;
+ }
+
+ for(const team of b.teams){
+
+  for(const f of team){
+
+   f.displayHp=
+    f.hp;
+
+   f.displayMental=
+    f.mental;
+  }
+ }
+
+ renderBattle();
+}
 function endTurn(){
 
  const b=
@@ -5218,14 +5240,17 @@ f.nextM=1;
 f.plannedAction=null;
  }
 
- checkDeaths();
+/* ターン終了時に表示ゲージを実際の値へ同期 */
+syncDisplayedStats();
 
- if(b.finished){
-  return;
- }
+checkDeaths();
 
- b.turn++;
- beginTurn();
+if(b.finished){
+ return;
+}
+
+b.turn++;
+beginTurn();
 }
 
 function checkDeaths(){
