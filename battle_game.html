@@ -2378,11 +2378,30 @@ function applyGlobalStart(){
     women.length &&
     Math.random()<P.normal
    ){
-    if(Math.random()<.5){
-     src.hp-=5*women.length;
-    }else{
-     src.mental-=5*women.length;
-    }
+    if(
+ women.length &&
+ Math.random()<P.normal
+){
+
+ if(Math.random()<.5){
+
+  directDamage(
+   src,
+   5*women.length,
+   0,
+   'うわきしょう反動'
+  );
+
+ }else{
+
+  directDamage(
+   src,
+   0,
+   5*women.length,
+   'うわきしょう反動'
+  );
+ }
+}
    }
   }
  }
@@ -2933,7 +2952,7 @@ if(battleAssets.background){
       ${f.name}
      </div>
 
-   miniStat(
+  ${ miniStat(
  'HP',
  f.displayHp ?? f.hp,
  f.displayMaxHp ?? f.maxHp,
@@ -2941,11 +2960,11 @@ if(battleAssets.background){
 )}
 
 ${miniStat(
-      '精神',
-      f.displayMental ?? f.mental,
-      f.maxMental,
-      'mental'
-     )}
+ '精神',
+ f.displayMental ?? f.mental,
+ f.displayMaxMental ?? f.maxMental,
+ 'mental'
+)}
 
      ${miniStat(
       'MP',
@@ -3061,11 +3080,11 @@ ${miniStat(
 )}
 
 ${miniStat(
-      '精神',
-      my.displayMental ?? my.mental,
-      my.maxMental,
-      'mental'
-     )}
+ '精神',
+ my.displayMental ?? my.mental,
+ my.displayMaxMental ?? my.maxMental,
+ 'mental'
+)}
 
      ${miniStat(
       'MP',
@@ -4905,8 +4924,19 @@ log(
  ); }
 
  if(m.selfMental){
-  f.mental+=m.selfMental;
- }
+
+ f.mental+=m.selfMental;
+
+ log(
+  m.selfMental<0
+   ?`${f.name}は反動で精神を${Math.abs(m.selfMental)}失った！`
+   :`${f.name}の精神が${m.selfMental}回復した！`,
+  m.selfMental<0?'damage':'heal',
+  f.side,
+  m.selfMental<0?'damage':'heal',
+  statSnapshot(f)
+ );
+}
 
 if(m.randomMentalDrink){
 
@@ -5472,26 +5502,27 @@ function directDamage(
   why
  ){
 
-  log(
-   `${t.name}に`+
-   `${hpDamage
-     ?` HP-${hpDamage}`
-     :''
-   }`+
-   `${mentalDamage
-     ?` 精神-${mentalDamage}`
-     :''
-   }`+
-   ` (${why})`,
-   'damage',
-   t.side,
-   'damage',
-   false,
-   {
-    hp:displayHpAfter,
-    mental:displayMentalAfter
-   }
-  );
+ log(
+ `${t.name}に`+
+ `${hpDamage
+   ?` HP-${hpDamage}`
+   :''
+ }`+
+ `${mentalDamage
+   ?` 精神-${mentalDamage}`
+   :''
+ }`+
+ ` (${why})`,
+ 'damage',
+ t.side,
+ 'damage',
+ {
+  hp:displayHpAfter,
+  mental:displayMentalAfter,
+  maxHp:t.maxHp,
+  maxMental:t.maxMental
+ }
+);
  }
 }
 
@@ -5968,11 +5999,8 @@ function log(
  effect=null,
  side=null,
  sound=null,
- syncStats=false,
  displayStats=null
 ){
-
- 
 
  const b=
   appState.battle;
@@ -5986,7 +6014,7 @@ function log(
   effect,
   side,
   sound,
-  syncStats
+  displayStats
  });
 
  renderBattle();
