@@ -1646,7 +1646,7 @@ mentalTakenMul:1,
   rampage:0,
   mentalResistStacks:0,
   verbalDot:0,
-  entangled:false,
+  entangled:0,
   swimming:false,
   skip:false,
   traits:[...c.traits],
@@ -3581,6 +3581,8 @@ function priorityScore(x){
   return 15;
  }
 
+
+
  if(
   x.f.traits.includes('ごうまん')
  ){
@@ -4042,11 +4044,15 @@ if(m.special==='verbalDot'){
  if(m.special==='entangle'){
 
   if(targets[0]){
-   targets[0].entangled=true;
+    targets[0].entangled=2;
+
+    log(
+      `${targets[0].name}にからみついた！`
+    );
   }
 
   return;
- }
+}
 
  if(m.special==='stealMp'){
 
