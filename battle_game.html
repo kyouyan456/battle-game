@@ -4408,14 +4408,42 @@ if(m.special==='verbalDot'){
    ok?50:0;
 
   if(
-   f.traits.includes('ギャンブラー')
-  ){
-   if(ok){
-    dmg*=1.5;
-   }else{
-   f.mp=Math.max(0,f.mp-5);
-   }
+ f.traits.includes('ギャンブラー')
+){
+ if(ok){
+
+  dmg*=1.5;
+
+ }else{
+
+  const penalty=5;
+
+  // MPが足りない分
+  const shortage=
+   Math.max(
+    0,
+    penalty-f.mp
+   );
+
+  // MPは最低0
+  f.mp=
+   Math.max(
+    0,
+    f.mp-penalty
+   );
+
+  // 不足MP×5の精神ダメージ
+  if(shortage>0){
+
+   directDamage(
+    f,
+    0,
+    shortage*5,
+    'ギャンブルMP不足'
+   );
   }
+ }
+}
 
   if(ok){
    applyDamage(
