@@ -1578,14 +1578,9 @@ d.innerHTML=
 
   <div class="stats">
     
-      <div class="stat">HP<br>${c.hp}</div>
-      <div class="stat">精神<br>${c.mental}</div>
-      <div class="stat">MP<br>${c.mp}</div>
-    </div>
-    <div>
-      ${c.races.map(x=>`<span class="tag">${x}</span>`).join('')}
-    </div>
-    <div class="small">特性: ${c.traits.join(' / ')}</div>`;
+        <div class="small">
+    特性: ${c.traits.join(' / ')}
+  </div>`;
 
   d.onclick=()=>selectChar(i);
 
