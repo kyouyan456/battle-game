@@ -31,6 +31,48 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
   gap:9px;
 }
 
+/* =========================
+   キャラ選択アイコン
+========================= */
+
+.select-character-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.select-character-head h3{
+  margin:0;
+}
+
+.select-character-icon,
+.select-character-icon-placeholder{
+  width:72px;
+  height:72px;
+
+  flex-shrink:0;
+
+  object-fit:cover;
+
+  border-radius:14px;
+
+  border:2px solid
+    rgba(255,255,255,.35);
+
+  background:#283247;
+}
+
+.select-character-icon-placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  font-size:.7rem;
+  color:#dce5f4;
+}
+
 /* 専用技 */
 .move-section-title.unique{
   background:#5b294f;
@@ -1508,9 +1550,45 @@ function renderSelection(){
    'card character'+
    (appState.selected.includes(i)?' selected':'');
 
-  d.innerHTML=
-   `<h3>${c.name}</h3>
-    <div class="stats">
+ const assets=
+ getCharacterAssets(c.name);
+
+d.innerHTML=
+ `<div class="select-character-head">
+
+   ${
+    assets.icon
+     ?`
+      <img
+       class="select-character-icon"
+       src="${assets.icon}"
+       alt="${c.name}"
+      >
+     `
+     :`
+      <div class="select-character-icon-placeholder">
+       ${c.name}
+      </div>
+     `
+   }
+
+   <h3>${c.name}</h3>
+
+  </div>
+
+  <div class="stats">
+    <div class="stat">HP<br>${c.hp}</div>
+    <div class="stat">精神<br>${c.mental}</div>
+    <div class="stat">MP<br>${c.mp}</div>
+  </div>
+
+  <div>
+    ${c.races.map(x=>`<span class="tag">${x}</span>`).join('')}
+  </div>
+
+  <div class="small">
+    特性: ${c.traits.join(' / ')}
+  </div>`;
       <div class="stat">HP<br>${c.hp}</div>
       <div class="stat">精神<br>${c.mental}</div>
       <div class="stat">MP<br>${c.mp}</div>
