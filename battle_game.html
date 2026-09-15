@@ -1249,6 +1249,7 @@ let battleMessageTimer=null;
 let battleMessagePlaying=false;
 
 let queuedBattleLogCount=0;  
+let pendingBattleResult=null;
   
 function isOnlineHost(){
  return appState.connection==='friend'&&onlinePlayerId===onlineHostId;
@@ -1607,10 +1608,15 @@ function cloneFighter(c,side,index=0){
  return {
   base:c,
   name:c.name,
-  maxHp:c.hp,
-  hp:c.hp,
-  maxMental:c.mental,
-  mental:c.mental,
+ maxHp:c.hp,
+hp:c.hp,
+
+displayHp:c.hp,
+
+maxMental:c.mental,
+mental:c.mental,
+
+displayMental:c.mental,
   maxMp:c.mp,
   mp:c.mp,
   side,
@@ -2339,6 +2345,8 @@ function resetBattleMessages(){
 
  queuedBattleLogCount=0;
 
+pendingBattleResult=null;
+
  if(battleMessageTimer){
 
   clearTimeout(
@@ -2408,6 +2416,37 @@ function showNextBattleMessage(){
 
   battleMessageTimer=null;
 
+  /*
+   戦闘終了済みなら
+   最後のメッセージを読み終わった後に
+   結果画面へ移動
+  */
+  if(
+   pendingBattleResult
+  ){
+
+   const result=
+    pendingBattleResult;
+
+   pendingBattleResult=null;
+
+   document.getElementById(
+    'resultText'
+   ).textContent=
+    result.text;
+
+   sfx(
+    result.text==='勝利'
+     ?660
+     :180,
+    .18
+   );
+
+   show('result');
+
+   return;
+  }
+
   renderMoves();
 
   return;
@@ -2471,15 +2510,27 @@ if(
   );
  }
 
- battleMessageTimer=
-  setTimeout(
-   ()=>{
-    battleMessagePlaying=false;
+/*
+ 戦闘終了後の最後のメッセージは
+ 自動送りしない。
+ プレイヤーのクリックを待つ。
+*/
+if(
+ pendingBattleResult &&
+ battleMessageQueue.length===0
+){
+ battleMessageTimer=null;
+ return;
+}
 
-    showNextBattleMessage();
-   },
-   2800
-  );
+battleMessageTimer=
+ setTimeout(
+  ()=>{
+   battleMessagePlaying=false;
+   showNextBattleMessage();
+  },
+  2800
+ );
 }
 
 
@@ -2610,14 +2661,14 @@ if(battleAssets.background){
 
      ${miniStat(
       'HP',
-      f.hp,
+      f.displayHp ?? f.hp,
       f.maxHp,
       'hp'
      )}
 
-     ${miniStat(
+${miniStat(
       '精神',
-      f.mental,
+      f.displayMental ?? f.mental,
       f.maxMental,
       'mental'
      )}
@@ -2728,16 +2779,16 @@ if(battleAssets.background){
       ${my.name}
      </div>
 
-     ${miniStat(
+    ${miniStat(
       'HP',
-      my.hp,
+      my.displayHp ?? my.hp,
       my.maxHp,
       'hp'
      )}
 
-     ${miniStat(
+${miniStat(
       '精神',
-      my.mental,
+      my.displayMental ?? my.mental,
       my.maxMental,
       'mental'
      )}
@@ -5205,10 +5256,32 @@ function checkDeaths(){
    f.alive=false;
    f.hp=Math.max(0,f.hp);
    f.mental=Math.max(0,f.mental);
+    f.displayHp=f.hp;
+f.displayMental=f.mental;
 
-   log(
-    `${f.name}は脱落した`
-   );
+   if(f.hp<=0){
+
+ log(
+  `${f.name}の体力は0になった！`,
+  'damage',
+  f.side,
+  null
+ );
+}
+
+if(f.mental<=0){
+
+ log(
+  `${f.name}の精神は0になった！`,
+  'damage',
+  f.side,
+  null
+ );
+}
+
+log(
+ `${f.name}は倒れた。`
+);
 
    if(f.gundam){
     f.gundam=false;
@@ -5326,25 +5399,21 @@ function finish(
  }
 
  b.finished=true;
+
  b.winnerOwnerId=
   winnerOwnerId;
 
- sfx(
-  txt==='勝利'
-   ?660
-   :180,
-  .18
- );
+ /*
+  ここでは結果画面へ移動しない。
+  最後の戦闘メッセージを
+  読み終わるまで待つ。
+ */
+ pendingBattleResult={
+  text:txt,
+  winnerOwnerId
+ };
 
- document.getElementById('resultText').textContent=
-  txt;
-
- if(
-  appState.connection!=='friend' ||
-  !isOnlineHost()
- ){
-  show('result');
- }
+ renderBattle();
 }
 
 function applyUniqueFaith(f){
