@@ -5242,7 +5242,12 @@ f.plannedAction=null;
 
 /* ターン終了時に表示ゲージを実際の値へ同期 */
 syncDisplayedStats();
-
+for(const team of b.teams){
+ for(const f of team){
+  f.displayHp=f.hp;
+  f.displayMental=f.mental;
+ }
+}
 checkDeaths();
 
 if(b.finished){
