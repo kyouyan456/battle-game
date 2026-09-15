@@ -1726,11 +1726,13 @@ function cloneFighter(c,side,index=0){
 hp:c.hp,
 
 displayHp:c.hp,
+displayMaxHp:c.hp,
 
 maxMental:c.mental,
 mental:c.mental,
 
 displayMental:c.mental,
+displayMaxMental:c.mental,
   maxMp:c.mp,
   mp:c.mp,
   side,
@@ -2156,34 +2158,74 @@ function beginTurn(){
   }
 
   if(
-   f.traits.includes('じあいのこころ')
-  ){
-   f.mental=
-    Math.min(
-     f.maxMental,
-     f.mental+5
-    );
-  }
+ f.traits.includes('じあいのこころ')
+){
 
-   if(f.haruka){
+ const before=f.mental;
 
  f.mental=
   Math.min(
    f.maxMental,
    f.mental+5
   );
+
+ if(f.mental>before){
+
+  log(
+   `${f.name}はじあいのこころで精神が${f.mental-before}回復した！`,
+   'heal',
+   f.side,
+   'heal',
+   statSnapshot(f)
+  );
+ }
 }
 
+  if(f.haruka){
+
+ const before=f.mental;
+
+ f.mental=
+  Math.min(
+   f.maxMental,
+   f.mental+5
+  );
+
+ if(f.mental>before){
+
+  log(
+   `${f.name}ははるかで精神が${f.mental-before}回復した！`,
+   'heal',
+   f.side,
+   'heal',
+   statSnapshot(f)
+  );
+ }
+}
   if(
-   f.traits.includes('ちゅうそつのいでんし') &&
-   Math.random()<P.normal
-  ){
-   f.hp=
-    Math.min(
-     f.maxHp,
-     f.hp+5
-    );
-  }
+ f.traits.includes('ちゅうそつのいでんし') &&
+ Math.random()<P.normal
+){
+
+ const before=f.hp;
+
+ f.hp=
+  Math.min(
+   f.maxHp,
+   f.hp+5
+  );
+
+ if(f.hp>before){
+
+  log(
+   `${f.name}はちゅうそつのいでんしでHPが${f.hp-before}回復した！`,
+   'heal',
+   f.side,
+   'heal',
+   statSnapshot(f)
+  );
+ }
+}
 
   if(
    f.traits.includes('できん')
@@ -2208,13 +2250,25 @@ if(f.traits.includes('にじゅうじんかく')){
  if(
  f.traits.includes('むげん成長')
 ){
+
  f.growthP*=1.08;
  f.growthM*=1.08;
 
  f.maxHp-=4;
- f.hp=Math.min(f.hp,f.maxHp);
+ f.hp=Math.min(
+  f.hp,
+  f.maxHp
+ );
 
  f.maxMp+=1;
+
+ log(
+  `${f.name}はむげん成長した！ 最大HPが4減少した`,
+  'buff',
+  f.side,
+  'buff',
+  statSnapshot(f)
+ );
 }
 
   if(f.verbalDot>0){
@@ -2614,45 +2668,49 @@ function showNextBattleMessage(){
    表示ゲージを進める
   */
   if(
-   message.displayStats &&
-   message.side!==null
-  ){
+ message.displayStats &&
+ message.side!==null
+){
 
-   const b=
-    appState.battle;
+ const b=appState.battle;
 
-   if(b){
+ if(b){
 
-    const fighter=
-     b.teams
-      .flat()
-      .find(
-       f=>
-        f.side===
-        message.side
-      );
-
-    if(fighter){
-
-     fighter.displayHp=
-      message.displayStats.hp;
-
-     fighter.displayMental=
-      message.displayStats.mental;
-    }
-
-    /*
-     HUDを再描画。
-     現在のメッセージ処理と
-     ぶつからないよう1フレーム後。
-    */
-    requestAnimationFrame(
-     ()=>{
-      renderBattle();
-     }
+  const fighter=
+   b.teams
+    .flat()
+    .find(
+     f=>f.side===message.side
     );
+
+  if(fighter){
+
+   fighter.displayHp=
+    message.displayStats.hp;
+
+   fighter.displayMental=
+    message.displayStats.mental;
+
+   if(
+    message.displayStats.maxHp!==undefined
+   ){
+    fighter.displayMaxHp=
+     message.displayStats.maxHp;
+   }
+
+   if(
+    message.displayStats.maxMental!==undefined
+   ){
+    fighter.displayMaxMental=
+     message.displayStats.maxMental;
    }
   }
+
+  requestAnimationFrame(
+   renderBattle
+  );
+ }
+}
 
 
   /*
@@ -2875,12 +2933,12 @@ if(battleAssets.background){
       ${f.name}
      </div>
 
-     ${miniStat(
-      'HP',
-      f.displayHp ?? f.hp,
-      f.maxHp,
-      'hp'
-     )}
+   miniStat(
+ 'HP',
+ f.displayHp ?? f.hp,
+ f.displayMaxHp ?? f.maxHp,
+ 'hp'
+)}
 
 ${miniStat(
       '精神',
@@ -2996,11 +3054,11 @@ ${miniStat(
      </div>
 
     ${miniStat(
-      'HP',
-      my.displayHp ?? my.hp,
-      my.maxHp,
-      'hp'
-     )}
+ 'HP',
+ my.displayHp ?? my.hp,
+ my.displayMaxHp ?? my.maxHp,
+ 'hp'
+)}
 
 ${miniStat(
       '精神',
@@ -4314,17 +4372,21 @@ if(m.special==='dodge'){
 
 if(m.special==='halalFood'){
 
- f.hp=
-  Math.min(
-   f.maxHp,
-   f.hp+20
-  );
+f.hp=
+ Math.min(
+  f.maxHp,
+  f.hp+20
+ );
 
- f.halalMentalMul*=1.2;
+f.halalMentalMul*=1.2;
 
 log(
  `${f.name}はHPを20回復！ `+
- `精神攻撃力が${f.halalMentalMul.toFixed(2)}倍になった`
+ `精神攻撃力が${f.halalMentalMul.toFixed(2)}倍になった`,
+ 'heal',
+ f.side,
+ 'heal',
+ statSnapshot(f)
 );
 
  return;
@@ -4387,11 +4449,15 @@ log(
 );
  }
 
- f.hp=f.maxHp;
+f.hp=f.maxHp;
 
- log(
-  `${f.name}はかめんをとり、HPを全回復した！`
- );
+log(
+ `${f.name}はかめんをとり、HPを全回復した！`,
+ 'heal',
+ f.side,
+ 'heal',
+ statSnapshot(f)
+);
 
  return;
 } 
@@ -4797,7 +4863,8 @@ if(m.healHp){
   `${f.name}のHPが${m.healHp}回復した！`,
   'heal',
   f.side,
-  'heal'
+  'heal',
+  statSnapshot(f)
  );
 }
 
@@ -4813,7 +4880,8 @@ if(m.healMental){
   `${f.name}の精神が${m.healMental}回復した！`,
   'heal',
   f.side,
-  'heal'
+  'heal',
+  statSnapshot(f)
  );
 }
  if(m.mpGain){
@@ -4826,18 +4894,39 @@ if(m.healMental){
 
  if(m.selfHp){
   f.hp+=m.selfHp;
- }
+log(
+  m.selfHp<0
+   ?`${f.name}は反動でHPを${Math.abs(m.selfHp)}失った！`
+   :`${f.name}のHPが${m.selfHp}回復した！`,
+  m.selfHp<0?'damage':'heal',
+  f.side,
+  m.selfHp<0?'damage':'heal',
+  statSnapshot(f)
+ ); }
 
  if(m.selfMental){
   f.mental+=m.selfMental;
  }
 
- if(m.randomMentalDrink){
-  f.mental+=
-   Math.random()<.5
-    ?5
-    :-5;
- }
+if(m.randomMentalDrink){
+
+ const change=
+  Math.random()<.5
+   ?5
+   :-5;
+
+ f.mental+=change;
+
+ log(
+  change>0
+   ?`${f.name}の精神が5回復した！`
+   :`${f.name}は精神を5失った！`,
+  change>0?'heal':'damage',
+  f.side,
+  change>0?'heal':'damage',
+  statSnapshot(f)
+ );
+}
 
 if(m.buffPhysicalNext){
 
@@ -5299,6 +5388,49 @@ p*=src.dualPhysical||1;
   );
  }
 }
+
+  function statSnapshot(f){
+
+ return {
+  hp:Math.max(0,f.hp),
+  mental:Math.max(0,f.mental),
+  maxHp:f.maxHp,
+  maxMental:f.maxMental
+ };
+}
+
+function changeStats(
+ f,
+ hpChange=0,
+ mentalChange=0,
+ message='',
+ effect=null,
+ sound=null
+){
+
+ f.hp=
+  Math.min(
+   f.maxHp,
+   f.hp+hpChange
+  );
+
+ f.mental=
+  Math.min(
+   f.maxMental,
+   f.mental+mentalChange
+  );
+
+ if(message){
+
+  log(
+   message,
+   effect,
+   f.side,
+   sound,
+   statSnapshot(f)
+  );
+ }
+}
 function directDamage(
  t,
  p,
@@ -5722,9 +5854,13 @@ function applyUniqueFaith(f){
   f.hp=1;
   f.uniqueHpUsed=true;
 
-  log(
-   `${f.name}はゆいいつしんのかごでHP1で耐えた！`
-  );
+ log(
+ `${f.name}はゆいいつしんのかごでHP1で耐えた！`,
+ 'heal',
+ f.side,
+ 'heal',
+ statSnapshot(f)
+);
  }
 
  if(
@@ -5735,8 +5871,12 @@ function applyUniqueFaith(f){
   f.uniqueMentalUsed=true;
 
   log(
-   `${f.name}はゆいいつしんのかごで精神1で耐えた！`
-  );
+ `${f.name}はゆいいつしんのかごで精神1で耐えた！`,
+ 'heal',
+ f.side,
+ 'heal',
+ statSnapshot(f)
+);
  }
 }
 
@@ -5832,24 +5972,7 @@ function log(
  displayStats=null
 ){
 
- const b=
-  appState.battle;
-
- if(!b){
-  return;
- }
-
- b.log.push({
-  text:s,
-  effect,
-  side,
-  sound,
-  syncStats,
-  displayStats
- });
-
- renderBattle();
-}
+ 
 
  const b=
   appState.battle;
