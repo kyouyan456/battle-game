@@ -1280,7 +1280,7 @@ buttonSe.preload = 'auto';
 
 const battleBgm = new Audio('sound/battle-bgm.mp3');
 battleBgm.loop = true;
-battleBgm.volume = 0.35;
+battleBgm.volume = 0.2;
 
 function playButtonSe(){
   buttonSe.currentTime = 0;
@@ -1290,7 +1290,7 @@ function playButtonSe(){
 
 
 battleBgm.loop = true;
-battleBgm.volume = 0.35;
+battleBgm.volume = 0.2;
 
 function startBattleBgm(){
 
@@ -6180,7 +6180,7 @@ function playBattleSound(name){
  const audio=
   new Audio(src);
 
- audio.volume=0.6;
+ audio.volume=0.9;
  audio.preload='auto';
 
  audio.play().catch(err=>{
