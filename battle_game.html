@@ -1237,12 +1237,37 @@ const battleAssets={
 const buttonSe = new Audio('sound/button.mp3');
 buttonSe.volume = 0.5;
 
-const readySe = new Audio('sound/ready.mp3');
+const readySe = new Audio('./sound/ready.mp3');
 readySe.volume = 0.6;
+readySe.preload = 'auto';
 
-function playButtonSe(){
-  buttonSe.currentTime = 0;
-  buttonSe.play().catch(()=>{});
+readySe.addEventListener('error', ()=>{
+  console.error(
+    'ready.mp3 読み込み失敗',
+    readySe.error,
+    readySe.currentSrc
+  );
+});
+
+function playReadySe(){
+
+  console.log(
+    'READY SE 実行',
+    readySe.currentSrc
+  );
+
+  readySe.currentTime = 0;
+
+  readySe.play()
+    .then(()=>{
+      console.log('ready.mp3 再生成功');
+    })
+    .catch(err=>{
+      console.error(
+        'ready.mp3 再生失敗',
+        err
+      );
+    });
 }
 
 function playReadySe(){
@@ -1829,6 +1854,8 @@ mentalTakenMul:1,
 }
 
 function startBattle(){
+
+ playReadySe();
 
  const need=
   appState.mode==='team3'?3:1;
@@ -6116,30 +6143,21 @@ document.addEventListener('click', e=>{
  const btn=
   e.target.closest('.btn');
 
- if(!btn){
+ if(
+  !btn ||
+  btn.disabled
+ ){
   return;
  }
 
  /*
-  対戦開始 / 準備完了
+  startBtnは
+  startBattle()内で鳴らす
  */
  if(btn.id==='startBtn'){
-
-  playReadySe();
-
   return;
  }
 
- /*
-  無効ボタンは鳴らさない
- */
- if(btn.disabled){
-  return;
- }
-
- /*
-  その他のボタン
- */
  playButtonSe();
 
 });
