@@ -2678,12 +2678,19 @@ function showNextBattleMessage(){
    ).textContent=
     result.text;
 
-   sfx(
-    result.text==='勝利'
-     ?660
-     :180,
-    .18
-   );
+   if(result.text==='勝利'){
+
+ playBattleSound(
+  'victory'
+ );
+
+}else{
+
+ sfx(
+  180,
+  .18
+ );
+}
 
    show('result');
 
@@ -6100,13 +6107,14 @@ function backToSelect(){
  renderSelection();
  show('select');
 }
-  /* =========================
+ /* =========================
    ボタン効果音
 ========================= */
 
 document.addEventListener('click', e=>{
 
- const btn=e.target.closest('.btn');
+ const btn=
+  e.target.closest('.btn');
 
  if(
   !btn ||
@@ -6116,18 +6124,19 @@ document.addEventListener('click', e=>{
  }
 
  /*
-  オンラインの準備完了ボタンだけは
-  専用のready音
+  キャラ選択画面の
+  「対戦開始 / 準備完了」
  */
- if(
-  btn.id==='startBtn' &&
-  appState.connection==='friend'
- ){
+ if(btn.id==='startBtn'){
+
   playReadySe();
+
   return;
  }
 
- /* その他のボタン */
+ /*
+  その他のボタン
+ */
  playButtonSe();
 
 });
