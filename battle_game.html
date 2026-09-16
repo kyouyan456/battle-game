@@ -1235,7 +1235,21 @@ const battleAssets={
 /* =========================
    戦闘BGM
 ========================= */
+const buttonSe = new Audio('sound/button.mp3');
+buttonSe.volume = 0.5;
 
+const readySe = new Audio('sound/ready.mp3');
+readySe.volume = 0.6;
+
+function playButtonSe(){
+  buttonSe.currentTime = 0;
+  buttonSe.play().catch(()=>{});
+}
+
+function playReadySe(){
+  readySe.currentTime = 0;
+  readySe.play().catch(()=>{});
+}
 const battleBgm = new Audio('sound/battle-bgm.mp3');
 
 battleBgm.loop = true;
