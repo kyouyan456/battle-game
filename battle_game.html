@@ -6101,6 +6101,37 @@ function backToSelect(){
  renderSelection();
  show('select');
 }
+  /* =========================
+   ボタン効果音
+========================= */
+
+document.addEventListener('click', e=>{
+
+ const btn=e.target.closest('.btn');
+
+ if(
+  !btn ||
+  btn.disabled
+ ){
+  return;
+ }
+
+ /*
+  オンラインの準備完了ボタンだけは
+  専用のready音
+ */
+ if(
+  btn.id==='startBtn' &&
+  appState.connection==='friend'
+ ){
+  playReadySe();
+  return;
+ }
+
+ /* その他のボタン */
+ playButtonSe();
+
+});
 </script>
 </body>
 </html>
