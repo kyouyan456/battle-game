@@ -1885,26 +1885,30 @@ async function startBattle(){
 
  if(appState.connection==='friend'){
 
-  const b=
+  const btn=
    document.getElementById('startBtn');
 
-  if(b){
-   b.disabled=true;
-   b.textContent='準備完了済み';
+  if(btn){
+   btn.disabled=true;
+   btn.textContent='準備完了済み';
   }
 
   const ri=
    document.getElementById('readyInfo');
 
   if(ri){
-   ri.textContent=
-    '準備完了！';
+   ri.textContent='準備完了！';
   }
 
-  // readyを最後まで鳴らす
+  /*
+   ready.mp3が終わるまで待つ
+  */
   await playReadyAndWait();
 
-  // 鳴り終わってからサーバーへ準備完了を送る
+  /*
+   鳴り終わってから
+   準備完了をサーバーへ送信
+  */
   sendOnline({
    type:'ready',
    selections:[...appState.selected]
@@ -1917,6 +1921,7 @@ async function startBattle(){
 
   return;
  }
+
 
  /*
   =========================
@@ -1924,46 +1929,25 @@ async function startBattle(){
   =========================
  */
 
- const startBtn=
+ const btn=
   document.getElementById('startBtn');
 
- if(startBtn){
-  startBtn.disabled=true;
+ if(btn){
+  btn.disabled=true;
  }
 
- // readyを最後まで鳴らす
+ /*
+  ready.mp3が終わるまで
+  キャラ選択画面のまま待つ
+ */
  await playReadyAndWait();
 
- if(startBtn){
-  startBtn.disabled=false;
- }
 
- const used=
-  new Set(appState.selected);
-
-  sendOnline({
-   type:'ready',
-   selections:[...appState.selected]
-  });
-
-  const b=
-   document.getElementById('startBtn');
-
-  if(b){
-   b.disabled=true;
-   b.textContent='準備完了済み';
-  }
-
-  const ri=
-   document.getElementById('readyInfo');
-
-  if(ri){
-   ri.textContent=
-    'ほかの参加者を待っています…';
-  }
-
-  return;
- }
+ /*
+  =========================
+  CPキャラ決定
+  =========================
+ */
 
  const used=
   new Set(appState.selected);
@@ -1975,6 +1959,13 @@ async function startBattle(){
 
  shuffle(pool);
 
+
+ /*
+  =========================
+  戦闘データ作成
+  =========================
+ */
+
  let b={
   turn:1,
   mode:appState.mode,
@@ -1984,6 +1975,10 @@ async function startBattle(){
   finished:false
  };
 
+
+ /*
+  タイマン
+ */
  if(appState.mode==='duel'){
 
   b.teams=[
@@ -2001,31 +1996,83 @@ async function startBattle(){
    ]
   ];
 
+
+ /*
+  3 vs 3
+ */
  }else if(appState.mode==='team3'){
 
   b.teams=[
    appState.selected.map(
-    (i,j)=>cloneFighter(chars[i],0,j)
+    (i,j)=>
+     cloneFighter(
+      chars[i],
+      0,
+      j
+     )
    ),
+
    pool.slice(0,3).map(
-    (i,j)=>cloneFighter(chars[i],1,j)
+    (i,j)=>
+     cloneFighter(
+      chars[i],
+      1,
+      j
+     )
    )
   ];
 
+
+ /*
+  乱闘
+ */
  }else{
 
   b.teams=[
-   [cloneFighter(chars[appState.selected[0]],0)],
-   [cloneFighter(chars[pool[0]],1)],
-   [cloneFighter(chars[pool[1]],2)],
-   [cloneFighter(chars[pool[2]],3)]
+   [
+    cloneFighter(
+     chars[appState.selected[0]],
+     0
+    )
+   ],
+   [
+    cloneFighter(
+     chars[pool[0]],
+     1
+    )
+   ],
+   [
+    cloneFighter(
+     chars[pool[1]],
+     2
+    )
+   ],
+   [
+    cloneFighter(
+     chars[pool[2]],
+     3
+    )
+   ]
   ];
 
-  b.active=[0,0,0,0];
+  b.active=[
+   0,
+   0,
+   0,
+   0
+  ];
  }
 
+
+ /*
+  =========================
+  戦闘開始
+  =========================
+ */
+
  appState.battle=b;
-resetBattleMessages();
+
+ resetBattleMessages();
 
  appState.lastSetup={
   ...appState,
@@ -2034,13 +2081,16 @@ resetBattleMessages();
   lastSetup:null
  };
 
-  show('battle');
+ /*
+  readyが完全に終了した後なので、
+  ここで初めて戦闘画面へ移動
+ */
+ show('battle');
 
  startBattleBgm();
 
  beginTurn();
 }
-
 function buildOnlineBattle(players,mode){
 
  const teams=
