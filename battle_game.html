@@ -1257,61 +1257,41 @@ const battleAssets={
   }
  },
 
- sounds:{
-  command:'sound/command.mp3',
-  damage:'sound/damage.mp3',
-  buff:'sound/buff.mp3',
-  debuff:'sound/debuff.mp3',
-  heal:'sound/heal.mp3',
-  defeat:'sound/defeat.mp3',
-  victory:'sound/victory.mp3'
+sounds:{
+  command:'',
+  damage:'damage.mp3',
+  buff:'buff.mp3',
+  debuff:'debuff.mp3',
+  heal:'heal.mp3',
+  defeat:'',
+  victory:'victory.mp3'
 }
 };
 
 /* =========================
    戦闘BGM
 ========================= */
-const buttonSe = new Audio('sound/button.mp3');
+const buttonSe = new Audio('button.mp3');
 buttonSe.volume = 0.5;
+buttonSe.preload = 'auto';
 
-const readySe = new Audio('./sound/ready.mp3');
+const readySe = new Audio('ready.mp3');
 readySe.volume = 0.6;
 readySe.preload = 'auto';
 
-readySe.addEventListener('error', ()=>{
-  console.error(
-    'ready.mp3 読み込み失敗',
-    readySe.error,
-    readySe.currentSrc
-  );
-});
+const battleBgm = new Audio('battle-bgm.mp3');
+battleBgm.loop = true;
+battleBgm.volume = 0.35;
 
-function playReadySe(){
-
-  console.log(
-    'READY SE 実行',
-    readySe.currentSrc
-  );
-
-  readySe.currentTime = 0;
-
-  readySe.play()
-    .then(()=>{
-      console.log('ready.mp3 再生成功');
-    })
-    .catch(err=>{
-      console.error(
-        'ready.mp3 再生失敗',
-        err
-      );
-    });
+function playButtonSe(){
+  buttonSe.currentTime = 0;
+  buttonSe.play().catch(()=>{});
 }
 
 function playReadySe(){
   readySe.currentTime = 0;
   readySe.play().catch(()=>{});
 }
-const battleBgm = new Audio('sound/battle-bgm.mp3');
 
 battleBgm.loop = true;
 battleBgm.volume = 0.35;
@@ -4329,7 +4309,8 @@ if(
   `${f.name}の「${n}」`
  );
 
- sfx(360,.045);
+ 
+  
 
  // あばれうま中：1/3で自分を攻撃
  // 基礎威力の半分。あばれうま2倍は乗せない
@@ -6078,25 +6059,17 @@ function showOnlineResult(){
 function playBattleSound(name){
 
  const src=
-  battleAssets.sounds[
-   name
-  ];
+  battleAssets.sounds[name];
 
  if(!src){
-
   return;
  }
 
- try{
+ const audio=new Audio(src);
 
-  const audio=
-   new Audio(src);
+ audio.volume=0.6;
 
-  audio.volume=.6;
-
-  audio.play();
-
- }catch(e){}
+ audio.play().catch(()=>{});
 }
 
 function sfx(freq=330,dur=.05){
