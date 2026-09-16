@@ -368,6 +368,69 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
   gap:2%;
 }
 
+/* =========================
+   置物
+========================= */
+
+.fighter-with-object{
+  position:relative;
+
+  width:100%;
+  height:100%;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+/*
+ キャラクター本体
+*/
+.fighter-main{
+  position:relative;
+
+  width:100%;
+  height:100%;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+
+  z-index:2;
+}
+
+/*
+ 置物
+*/
+.summoned-object{
+  position:absolute;
+
+  bottom:0;
+  right:-75%;
+
+  width:100%;
+  height:100%;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+
+  z-index:1;
+
+  pointer-events:none;
+}
+
+.summoned-object img{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+  object-position:center bottom;
+
+  user-select:none;
+  pointer-events:none;
+}
+
 
 /* =========================
    立ち絵
@@ -1256,6 +1319,21 @@ const battleAssets={
    icon:'characters/keppon.png'
   }
  },
+   objects:{
+  gundam:'characters/gundam.png',
+  haruka:'characters/haruka.png'
+ },
+
+ sounds:{
+  command:'',
+  damage:'sound/damage.mp3',
+  buff:'sound/buff.mp3',
+  debuff:'sound/debuff.mp3',
+  heal:'sound/heal.mp3',
+  defeat:'',
+  victory:'sound/victory.mp3',
+  ready:'sound/ready.mp3'
+ }
 
 sounds:{
   command:'',
@@ -2620,6 +2698,62 @@ function applyGlobalStart(){
  );
 }
 
+function summonedObjectHtml(fighter){
+
+ if(!fighter){
+  return '';
+ }
+
+ let src='';
+
+ let name='';
+
+
+ /*
+  ガンダム
+ */
+ if(fighter.gundam){
+
+  src=
+   battleAssets.objects?.gundam || '';
+
+  name='ガンダム';
+ }
+
+
+ /*
+  はるか
+ */
+ else if(fighter.haruka){
+
+  src=
+   battleAssets.objects?.haruka || '';
+
+  name='はるか';
+ }
+
+
+ /*
+  置物なし
+ */
+ if(!src){
+  return '';
+ }
+
+
+ return `
+  <div
+   class="summoned-object"
+   title="${name}"
+  >
+   <img
+    src="${src}"
+    alt="${name}"
+   >
+  </div>
+ `;
+}
+
 
 function spriteHtml(
  fighter,
@@ -2636,27 +2770,56 @@ function spriteHtml(
    ?assets.player
    :assets.enemy;
 
+
+ /*
+  キャラクター本体
+ */
+ let mainHtml='';
+
  if(src){
 
-  return `
+  mainHtml=`
    <img
     class="battle-sprite"
     src="${src}"
     alt="${fighter.name}"
    >
   `;
+
+ }else{
+
+  mainHtml=`
+   <div class="sprite-placeholder">
+    ${fighter.name}<br>
+    ${type==='player'
+     ?'自分側立ち絵'
+     :'敵側立ち絵'}
+   </div>
+  `;
  }
 
+
+ /*
+  置物
+ */
+ const objectHtml=
+  summonedObjectHtml(
+   fighter
+  );
+
+
  return `
-  <div class="sprite-placeholder">
-   ${fighter.name}<br>
-   ${type==='player'
-    ?'自分側立ち絵'
-    :'敵側立ち絵'}
+  <div class="fighter-with-object">
+
+   <div class="fighter-main">
+    ${mainHtml}
+   </div>
+
+   ${objectHtml}
+
   </div>
  `;
 }
-
 
 function iconHtml(fighter){
 
