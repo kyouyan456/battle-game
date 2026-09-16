@@ -1264,7 +1264,8 @@ sounds:{
   debuff:'sound/debuff.mp3',
   heal:'sound/heal.mp3',
   defeat:'',
-  victory:'sound/victory.mp3'
+  victory:'sound/victory.mp3',
+  ready:'sound/ready.mp3'
 }
 };
 
@@ -1275,9 +1276,7 @@ const buttonSe = new Audio('sound/button.mp3');
 buttonSe.volume = 0.5;
 buttonSe.preload = 'auto';
 
-const readySe = new Audio('sound/ready.mp3');
-readySe.volume = 0.6;
-readySe.preload = 'auto';
+
 
 const battleBgm = new Audio('sound/battle-bgm.mp3');
 battleBgm.loop = true;
@@ -1288,10 +1287,7 @@ function playButtonSe(){
   buttonSe.play().catch(()=>{});
 }
 
-function playReadySe(){
-  readySe.currentTime = 0;
-  readySe.play().catch(()=>{});
-}
+
 
 battleBgm.loop = true;
 battleBgm.volume = 0.35;
@@ -1872,10 +1868,14 @@ mentalTakenMul:1,
 
 function startBattle(){
 
- playReadySe();
-
  const need=
   appState.mode==='team3'?3:1;
+
+ if(appState.selected.length<need){
+  return alert(`キャラを${need}人選択してください。`);
+ }
+
+ playBattleSound('ready');
 
  if(appState.selected.length<need){
   return alert(`キャラを${need}人選択してください。`);
@@ -6062,16 +6062,28 @@ function playBattleSound(name){
   battleAssets.sounds[name];
 
  if(!src){
+  console.error(
+   '効果音が登録されていません:',
+   name
+  );
   return;
  }
 
- const audio=new Audio(src);
+ const audio=
+  new Audio(src);
 
  audio.volume=0.6;
+ audio.preload='auto';
 
- audio.play().catch(()=>{});
+ audio.play().catch(err=>{
+  console.error(
+   '効果音の再生に失敗:',
+   name,
+   src,
+   err
+  );
+ });
 }
-
 function sfx(freq=330,dur=.05){
 
  try{
