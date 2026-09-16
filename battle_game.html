@@ -124,7 +124,7 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
   width:100%;
 
   border-radius:18px;
-  overflow:hidden;
+  overflow:visible;
 
   background:#10131a;
 
@@ -187,6 +187,7 @@ h1,h2,h3{margin:.2em 0 .65em}.grid{display:grid;gap:14px}.home-grid{grid-templat
 
   /* 約1/3を背景の上へ出す */
   transform:translateY(-35px);
+  
 }
 
 .player-hud{
@@ -735,6 +736,7 @@ body{
   .enemy-hud-row{
     min-height:48px;
     gap:3px;
+     transform:none;
   }
 
   .enemy-hud{
@@ -860,6 +862,7 @@ body{
     min-height:72px;
 
     margin-top:0;
+    transform:none;
 
     grid-template-columns:
       46px 1fr;
