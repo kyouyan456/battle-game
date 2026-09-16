@@ -1866,22 +1866,80 @@ mentalTakenMul:1,
  };
 }
 
-function startBattle(){
+async function startBattle(){
 
  const need=
   appState.mode==='team3'?3:1;
 
  if(appState.selected.length<need){
-  return alert(`キャラを${need}人選択してください。`);
+  return alert(
+   `キャラを${need}人選択してください。`
+  );
  }
 
- playBattleSound('ready');
-
- if(appState.selected.length<need){
-  return alert(`キャラを${need}人選択してください。`);
- }
+ /*
+  =========================
+  オンライン
+  =========================
+ */
 
  if(appState.connection==='friend'){
+
+  const b=
+   document.getElementById('startBtn');
+
+  if(b){
+   b.disabled=true;
+   b.textContent='準備完了済み';
+  }
+
+  const ri=
+   document.getElementById('readyInfo');
+
+  if(ri){
+   ri.textContent=
+    '準備完了！';
+  }
+
+  // readyを最後まで鳴らす
+  await playReadyAndWait();
+
+  // 鳴り終わってからサーバーへ準備完了を送る
+  sendOnline({
+   type:'ready',
+   selections:[...appState.selected]
+  });
+
+  if(ri){
+   ri.textContent=
+    'ほかの参加者を待っています…';
+  }
+
+  return;
+ }
+
+ /*
+  =========================
+  CPU戦
+  =========================
+ */
+
+ const startBtn=
+  document.getElementById('startBtn');
+
+ if(startBtn){
+  startBtn.disabled=true;
+ }
+
+ // readyを最後まで鳴らす
+ await playReadyAndWait();
+
+ if(startBtn){
+  startBtn.disabled=false;
+ }
+
+ const used=
+  new Set(appState.selected);
 
   sendOnline({
    type:'ready',
@@ -6082,6 +6140,62 @@ function playBattleSound(name){
    src,
    err
   );
+ });
+}
+  function playReadyAndWait(){
+
+ return new Promise(resolve=>{
+
+  const src=
+   battleAssets.sounds.ready;
+
+  if(!src){
+   resolve();
+   return;
+  }
+
+  const audio=
+   new Audio(src);
+
+  audio.volume=0.6;
+  audio.preload='auto';
+
+  let finished=false;
+
+  const done=()=>{
+
+   if(finished){
+    return;
+   }
+
+   finished=true;
+   resolve();
+  };
+
+  // ready.mp3が最後まで鳴ったら続行
+  audio.addEventListener(
+   'ended',
+   done,
+   {once:true}
+  );
+
+  // エラー時はゲームを止めず続行
+  audio.addEventListener(
+   'error',
+   done,
+   {once:true}
+  );
+
+  audio.play().catch(err=>{
+
+   console.error(
+    'ready効果音の再生に失敗:',
+    err
+   );
+
+   done();
+  });
+
  });
 }
 function sfx(freq=330,dur=.05){
