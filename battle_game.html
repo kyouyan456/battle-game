@@ -1273,14 +1273,14 @@ sounds:{
    戦闘BGM
 ========================= */
 const buttonSe = new Audio('sound/button.mp3');
-buttonSe.volume = 0.5;
+buttonSe.volume = 0.7;
 buttonSe.preload = 'auto';
 
 
 
 const battleBgm = new Audio('sound/battle-bgm.mp3');
 battleBgm.loop = true;
-battleBgm.volume = 0.2;
+battleBgm.volume = 0.1;
 
 function playButtonSe(){
   buttonSe.currentTime = 0;
@@ -1290,7 +1290,7 @@ function playButtonSe(){
 
 
 battleBgm.loop = true;
-battleBgm.volume = 0.2;
+battleBgm.volume = 0.1;
 
 function startBattleBgm(){
 
