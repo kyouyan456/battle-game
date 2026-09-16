@@ -6116,21 +6116,24 @@ document.addEventListener('click', e=>{
  const btn=
   e.target.closest('.btn');
 
- if(
-  !btn ||
-  btn.disabled
- ){
+ if(!btn){
   return;
  }
 
  /*
-  キャラ選択画面の
-  「対戦開始 / 準備完了」
+  対戦開始 / 準備完了
  */
  if(btn.id==='startBtn'){
 
   playReadySe();
 
+  return;
+ }
+
+ /*
+  無効ボタンは鳴らさない
+ */
+ if(btn.disabled){
   return;
  }
 
