@@ -1319,10 +1319,19 @@ const battleAssets={
    icon:'characters/keppon.png'
   }
  },
-   objects:{
-  gundam:'characters/gundam.png',
-  haruka:'characters/haruka.png'
- },
+  objects:{
+
+  gundam:{
+    player:'characters/gundam-b.png',
+    enemy:'characters/gundam.png'
+  },
+
+  haruka:{
+    player:'characters/haruka-b.png',
+    enemy:'characters/haruka.png'
+  }
+
+},
 
  
 
@@ -2689,14 +2698,16 @@ function applyGlobalStart(){
  );
 }
 
-function summonedObjectHtml(fighter){
+function summonedObjectHtml(
+ fighter,
+ type
+){
 
  if(!fighter){
   return '';
  }
 
- let src='';
-
+ let object=null;
  let name='';
 
 
@@ -2705,8 +2716,8 @@ function summonedObjectHtml(fighter){
  */
  if(fighter.gundam){
 
-  src=
-   battleAssets.objects?.gundam || '';
+  object=
+   battleAssets.objects?.gundam;
 
   name='ガンダム';
  }
@@ -2717,8 +2728,8 @@ function summonedObjectHtml(fighter){
  */
  else if(fighter.haruka){
 
-  src=
-   battleAssets.objects?.haruka || '';
+  object=
+   battleAssets.objects?.haruka;
 
   name='はるか';
  }
@@ -2727,6 +2738,20 @@ function summonedObjectHtml(fighter){
  /*
   置物なし
  */
+ if(!object){
+  return '';
+ }
+
+
+ /*
+  自分側・敵側で画像を分ける
+ */
+ const src=
+  type==='player'
+   ?object.player
+   :object.enemy;
+
+
  if(!src){
   return '';
  }
@@ -2795,7 +2820,8 @@ function spriteHtml(
  */
  const objectHtml=
   summonedObjectHtml(
-   fighter
+   fighter,
+    type
   );
 
 
