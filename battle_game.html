@@ -4830,9 +4830,7 @@ if(m.special==='handPiece'){
  );
 
  return;
-}
-if(m.special==='dodge'){
-  if(m.special==='strangle'){
+}if(m.special==='strangle'){
 
  const t=targets[0];
 
@@ -4861,6 +4859,13 @@ if(m.special==='dodge'){
   'debuff'
  );
 
+ return;
+}
+
+if(m.special==='dodge'){
+
+ // dodging自体はターン処理開始時に
+ // すでに有効化済み
  return;
 }
 
