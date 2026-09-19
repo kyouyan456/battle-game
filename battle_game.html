@@ -1329,6 +1329,10 @@ const battleAssets={
   haruka:{
     player:'characters/haruka-b.png',
     enemy:'characters/haruka.png'
+  }, 
+    remi:{
+    player:'characters/remi-b.png',
+    enemy:'characters/remi.png'
   }
 
 },
@@ -1419,6 +1423,7 @@ const moveBook={
  'いっぽん':{mp:3,physical:30},
  'おうと':{mp:5,mental:50,selfHp:-5,selfMental:-5},
  'きせいする':{mp:2,special:'parasite'},
+ 'こうおん':{mp:1,physical:10,tags:['おと'],special:'highTone'},
 };
 
 const chars=[
@@ -1432,10 +1437,17 @@ const chars=[
 {name:'まさや',hp:150,mental:90,mp:5,races:['デブ','らぐびーぶ'],traits:['ごうまん','かりめん','あくしゅう','きょたい'],moves:{'だっぷん':{mp:4,special:'poop'},'ねんてん':{mp:1,selfHp:-50,special:'mentalResistStack'},'ばいとテロ':{mp:3,physical:10,mental:10,special:'elderDouble'},...pick(['タックル','べんきょう','ギャンブル','いんしゅ','さっかー','ラップ'])}},
 {name:'さとけい',hp:100,mental:100,mp:8,races:['ふつう'],traits:['いぬけい','じんだいのかこい'],moves:{'えんげき':{mp:1,special:'copy',copyPriority:true},'いぬ':{selfMental:-10,special:'dogGuard'},...pick(['おおごえ','さっかー','べんきょう','ちーといつ','れいしょう','おうと'])}},
 {name:'みやび',hp:80,mental:110,mp:7,races:['しそうか'],traits:['じゅんあい','うんどうおんち','できん','どくぜつ','だんそんじょひ','きけんしそう'],moves:{'ゆかぺろ':{selfHp:-10,buffPhysicalNext:1.2},'けんびきょう':{special:'stealMp'},'おちゃたて':{healMental:10},...pick(['べんきょう','とうし','ラップ','れいしょう','わるだくみ','タックル'])}},
-{name:'むっちゃん',hp:120,mental:110,mp:6,races:['おんな','でぶ','びびゅつか'],traits:['じあいのこころ','きょたい','ごうまん','ユーチューバー'],moves:{'すいみんぐ':{mp:4,special:'swim'},'かいご':{mp:2,healMental:30},'たたきおこす':{mp:3,physical:40,special:'wakeMp'},...pick(['たっくる','おえかき','おおごえ','べんきょう','しんれいげんしょう'])}},
-{name:'けっぽん',hp:75,mental:75,mp:8,races:['おんな','ミックス'],traits:['ひかりのヴェール','むちのヴェール','ゆいいつしんのかご'],moves:{'かみをまく':{special:'wrapHair'},'ハラールフード':{mp:3,special:'halalFood'},'かめんをとる':{mp:8,special:'removeMask'},'ホロゴヌ・サニア・コイケ':{mp:5,special:'randomMove'},...pick(['しんれいげんしょう','いっぽん','きせいする'])}}  
-{name:'いろは',hp:80,mental:80,mp:10,races:['おんな','なめくじ'],traits:['しかい','にじゅうじんかく','レイシスト','うんどうおんち'],moves:{'しめあげる','ハンドピース','なめくじエキス','れみ'},...pick(['きせいする','おうと','こうおん','おおごえ'])}];
+{name:'むっちゃん',hp:120,mental:110,mp:6,races:['おんな','デブ','びびゅつか'],traits:['じあいのこころ','きょたい','ごうまん','ユーチューバー'],moves:{'すいみんぐ':{mp:4,special:'swim'},'かいご':{mp:2,healMental:30},'たたきおこす':{mp:3,physical:40,special:'wakeMp'},...pick(['たっくる','おえかき','おおごえ','べんきょう','しんれいげんしょう'])}},
+{name:'けっぽん',hp:75,mental:75,mp:8,races:['おんな','ミックス'],traits:['ひかりのヴェール','むちのヴェール','ゆいいつしんのかご'],moves:{'かみをまく':{special:'wrapHair'},'ハラールフード':{mp:3,special:'halalFood'},'かめんをとる':{mp:8,special:'removeMask'},'ホロゴヌ・サニア・コイケ':{mp:5,special:'randomMove'},...pick(['しんれいげんしょう','いっぽん','きせいする'])}},
 
+{name:'いろは',hp:80,mental:80,mp:10,races:['おんな','なめくじ'],traits:['しかい','にじゅうじんかく','レイシスト','うんどうおんち'],moves:{
+ 'しめあげる':{mp:3,special:'strangle'},
+ 'ハンドピース':{mp:3,special:'handPiece'},
+ 'なめくじエキス':{mp:2,special:'slugExtract'},
+ 'れみ':{mp:9,special:'remi'},
+ ...pick(['きせいする','おうと','こうおん','おおごえ'])
+}}
+];
 function pick(arr){
  const o={};
  for(const n of arr)o[n]=moveBook[n]||commonMoves[n]||{};
@@ -1931,6 +1943,8 @@ plannedAction:null,
 mentalTakenMul:1,
   gundam:false,
   haruka:false,
+  remi:false,
+  mpRegenLock:0,
   rampage:0,
   mentalResistStacks:0,
   verbalDot:0,
@@ -2414,7 +2428,7 @@ function beginTurn(){
    return;
   }
 
-  let regen=
+   let regen=
    1+
    (
     f.traits.includes('めんざいたいしつ')
@@ -2422,12 +2436,27 @@ function beginTurn(){
      :0
    );
 
+  /*
+   しめあげる中は
+   本来の回復量に関係なく1
+  */
+  if((f.mpRegenLock||0)>0){
+   regen=1;
+  }
+
   f.mp=
    Math.min(
     f.maxMp,
     f.mp+regen
    );
 
+  /*
+   3回のターン開始時回復を
+   1に固定したあと解除
+  */
+  if((f.mpRegenLock||0)>0){
+   f.mpRegenLock--;
+  }
   if(f.traits.includes('むしば')){
    directDamage(
     f,
@@ -2732,6 +2761,13 @@ function summonedObjectHtml(
    battleAssets.objects?.haruka;
 
   name='はるか';
+ }
+   else if(fighter.remi){
+
+  object=
+   battleAssets.objects?.remi;
+
+  name='れみ';
  }
 
 
@@ -4751,8 +4787,82 @@ if(m.special==='copy'){
  
 
 function executeMoveEffect(f,n,m,targets){
+  if(m.special==='slugExtract'){
 
+ const before=f.hp;
+
+ f.hp=
+  Math.min(
+   f.maxHp,
+   f.hp+40
+  );
+
+ const healed=
+  f.hp-before;
+
+ log(
+  `${f.name}はなめくじエキスでHPを${healed}回復した！`,
+  'heal',
+  f.side,
+  'heal',
+  statSnapshot(f)
+ );
+
+ return;
+}
+if(m.special==='handPiece'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ /*
+  applyDamageを通さないことで
+  攻撃補正・防御補正・防御・よける等を無視
+ */
+ directDamage(
+  t,
+  20,
+  0,
+  'ハンドピース'
+ );
+
+ return;
+}
 if(m.special==='dodge'){
+  if(m.special==='strangle'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ const lost=
+  Math.min(
+   1,
+   t.mp
+  );
+
+ t.mp-=lost;
+
+ /*
+  次の3回のターン開始時、
+  MP自然回復量を1に固定
+ */
+ t.mpRegenLock=3;
+
+ log(
+  `${f.name}は${t.name}をしめあげた！ MP-${lost}、3ターンMP回復量が1になった`,
+  'debuff',
+  t.side,
+  'debuff'
+ );
+
+ return;
+}
 
  // dodging自体はターン処理開始時に
  // すでに有効化済み
@@ -4921,7 +5031,25 @@ log(
 
  return;
 }
+if(m.special==='remi'){
 
+ if(f.remi){
+
+  log(
+   'れみはすでにいる'
+  );
+
+ }else{
+
+  f.remi=true;
+
+  log(
+   `${f.name}はれみを設置した！`
+  );
+ }
+
+ return;
+}
 if(m.special==='rampage'){
   f.rampage=4;
   log(
@@ -5492,6 +5620,17 @@ function applyDamage(
 
  const tags=
   m.tags||[];
+   /*
+  レイシスト：
+  デブへの物理・精神攻撃×1.2
+ */
+ if(
+  src.traits.includes('レイシスト') &&
+  t.races.includes('デブ')
+ ){
+  p*=1.2;
+  q*=1.2;
+ }
 
  if(p){
 
@@ -6052,6 +6191,25 @@ if(f.gundam){
   );
  }
 }
+   if(f.remi){
+
+ const t=
+  randomLivingEnemy(f);
+
+ if(t){
+
+  /*
+   れみ自身による精神15なので
+   いろは本人の攻撃補正は使用しない
+  */
+  directDamage(
+   t,
+   0,
+   15,
+   'れみ'
+  );
+ }
+}
 
   if(f.swimming){
 
@@ -6162,6 +6320,9 @@ log(
   if(f.haruka){
  f.haruka=false;
 }
+      if(f.remi){
+   f.remi=false;
+  }
 
    if(b.mode==='team3'){
 
