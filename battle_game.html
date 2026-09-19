@@ -1319,6 +1319,17 @@ const battleAssets={
    icon:'characters/keppon.png'
   }
  },
+    けっぽん:{
+   player:'characters/keppon-b.png',
+   enemy:'characters/keppon.png',
+   icon:'characters/keppon.png'
+  },
+
+  いろは:{
+   player:'characters/iroha-b.png',
+   enemy:'characters/iroha.png',
+   icon:'characters/iroha.png'
+  }
   objects:{
 
   gundam:{
@@ -3932,6 +3943,7 @@ function moveNeedsTarget(m){
   m.special==='swim' ||
   m.special==='dogGuard' ||
   m.special==='wrapHair' ||
+   
   m.special==='halalFood'
  ){
   return false;
@@ -3945,6 +3957,8 @@ function moveNeedsTarget(m){
   m.multi ||
   m.special==='copy' ||
   m.special==='parasite' ||
+  m.special==='strangle' ||
+  m.special==='handPiece' ||
   m.special==='removeMask' ||
   m.special==='verbalDot' ||
   m.special==='entangle' ||
@@ -4867,7 +4881,41 @@ if(m.special==='handPiece'){
  );
 
  return;
-}if(m.special==='strangle'){
+}
+  if(m.special==='highTone'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ /*
+  よけるだけは有効
+ */
+ if(t.dodging){
+
+  log(
+   `${t.name}はこうおんをよけた！`
+  );
+
+  return;
+ }
+
+ /*
+  攻撃力・防御力補正を無視して
+  物理10ダメージ
+ */
+ directDamage(
+  t,
+  10,
+  0,
+  'こうおん'
+ );
+
+ return;
+}
+  if(m.special==='strangle'){
 
  const t=targets[0];
 
@@ -4903,8 +4951,6 @@ if(m.special==='dodge'){
 
  // dodging自体はターン処理開始時に
  // すでに有効化済み
- return;
-}
 
  // dodging自体はターン処理開始時に
  // すでに有効化済み
