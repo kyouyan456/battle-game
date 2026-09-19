@@ -2457,14 +2457,51 @@ function beginTurn(){
   if((f.mpRegenLock||0)>0){
    f.mpRegenLock--;
   }
-  if(f.traits.includes('むしば')){
-   directDamage(
-    f,
-    2,
-    2,
-    'むしば'
+  /*
+ むしばダメージ
+*/
+if(f.traits.includes('むしば')){
+
+ directDamage(
+  f,
+  2,
+  2,
+  'むしば'
+ );
+}
+
+/*
+ ゆうまのむしば感染
+
+ ゆうまが場にいて、
+ 相手がまだむしばではなく、
+ 「しかい」も持っていない場合、
+ 50%で感染する
+*/
+if(
+ f.name==='ゆうま' &&
+ f.traits.includes('むしば')
+){
+
+ for(const t of livingEnemies(f)){
+
+  if(
+   !t.traits.includes('むしば') &&
+   !t.traits.includes('しかい') &&
+   Math.random()<P.normal
+  ){
+
+   t.traits.push('むしば');
+
+   log(
+    `${t.name}にむしばが感染した！`,
+    'debuff',
+    t.side,
+    'debuff'
    );
   }
+ }
+}
 
   if(
  f.traits.includes('じあいのこころ')
@@ -5455,6 +5492,27 @@ if(m.healMental){
   f.side,
   'heal',
   statSnapshot(f)
+ );
+}/*
+ やすむ：感染したむしばを治療
+ ゆうま本人のむしばは治らない
+*/
+if(
+ n==='やすむ' &&
+ f.name!=='ゆうま' &&
+ f.traits.includes('むしば')
+){
+
+ f.traits=
+  f.traits.filter(
+   trait=>trait!=='むしば'
+  );
+
+ log(
+  `${f.name}のむしばが治った！`,
+  'heal',
+  f.side,
+  'heal'
  );
 }
  if(m.mpGain){
