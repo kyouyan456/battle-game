@@ -1455,6 +1455,13 @@ const chars=[
  'なめくじエキス':{mp:2,special:'slugExtract'},
  'れみ':{mp:9,special:'remi'},
  ...pick(['きせいする','おうと','こうおん','おおごえ'])
+}},
+
+{name:'ながくら',hp:130,mental:90,mp:6,races:['やきゅうぶ'],traits:['HG','ピッチャー'],moves:{
+ 'ストラックアウト':{mp:5,special:'strikeOut'},
+ 'できんにする':{special:'giveDekin'},
+ 'とうきゅう':{mp:3,special:'pitchAttack'},
+ ...pick(['ギャンブル','べんきょう','おおごえ'])
 }}
 ];
 function pick(arr){
@@ -2450,6 +2457,75 @@ function beginTurn(){
    return;
   }
 
+   /*
+ HG：
+ 場にいる「おんな」以外の誰か1人から
+ 毎ターンHP・精神を5吸収
+*/
+if(f.traits.includes('HG')){
+
+ const candidates=
+  allActive().filter(
+   t=>
+    t!==f &&
+    t.alive &&
+    !t.races.includes('おんな')
+  );
+
+ if(candidates.length){
+
+  const t=
+   candidates[
+    Math.floor(
+     Math.random()*candidates.length
+    )
+   ];
+
+  const hpTake=
+   Math.min(
+    5,
+    Math.max(0,t.hp)
+   );
+
+  const mentalTake=
+   Math.min(
+    5,
+    Math.max(0,t.mental)
+   );
+
+  t.hp-=hpTake;
+  t.mental-=mentalTake;
+
+  f.hp=
+   Math.min(
+    f.maxHp,
+    f.hp+hpTake
+   );
+
+  f.mental=
+   Math.min(
+    f.maxMental,
+    f.mental+mentalTake
+   );
+
+  log(
+   `${f.name}はHGで${t.name}からHP${hpTake}・精神${mentalTake}を吸収した！`,
+   'heal',
+   f.side,
+   'heal',
+   statSnapshot(f)
+  );
+
+  log(
+   `${t.name}はHGでHP${hpTake}・精神${mentalTake}を吸収された！`,
+   'damage',
+   t.side,
+   'damage',
+   statSnapshot(t)
+  );
+ }
+}
+
    let regen=
    1+
    (
@@ -2598,7 +2674,7 @@ if(
   if(
    f.traits.includes('できん')
   ){
-   f.mentalBuff*=1.2;
+   f.mentalBuff*=1.17;
   }
 
 // にじゅうじんかく
@@ -3970,6 +4046,9 @@ function moveNeedsTarget(m){
   m.special==='parasite' ||
   m.special==='strangle' ||
   m.special==='handPiece' ||
+    m.special==='strikeOut' ||
+  m.special==='giveDekin' ||
+  m.special==='pitchAttack' ||
   m.special==='removeMask' ||
   m.special==='verbalDot' ||
   m.special==='entangle' ||
@@ -4422,10 +4501,17 @@ function priorityScore(x){
 
 
 
- if(
+  if(
   x.f.traits.includes('ごうまん')
  ){
   return 3;
+ }
+
+ if(
+  x.f.traits.includes('ピッチャー') &&
+  Math.random()<P.normal
+ ){
+  return 10;
  }
 
  return 0;
@@ -4890,6 +4976,103 @@ if(m.special==='handPiece'){
   0,
   'ハンドピース'
  );
+
+ return;
+}
+  /*
+ ストラックアウト
+ 10～90からランダムなダメージ。
+ 攻撃倍率・固定値加算などを完全に無視。
+*/
+if(m.special==='strikeOut'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ const damage=
+  Math.floor(
+   Math.random()*81
+  )+10;
+
+ directDamage(
+  t,
+  damage,
+  0,
+  'ストラックアウト'
+ );
+
+ return;
+}
+
+
+/*
+ できんにする
+
+ ・通常の相手 → できん付与
+ ・すでにできん → 無効
+ ・元からできんを持つみやび → 無効
+*/
+if(m.special==='giveDekin'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ if(t.traits.includes('できん')){
+
+  log(
+   `${t.name}はすでにできんになっている`
+  );
+
+  return;
+ }
+
+ t.traits.push('できん');
+
+ log(
+  `${t.name}はできんになった！`,
+  'debuff',
+  t.side,
+  'debuff'
+ );
+
+ return;
+}
+
+
+/*
+ とうきゅう
+ 50%で物理40ダメージ
+*/
+if(m.special==='pitchAttack'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ if(Math.random()<P.normal){
+
+  applyDamage(
+   f,
+   t,
+   {
+    physical:40
+   }
+  );
+
+ }else{
+
+  log(
+   `${f.name}のとうきゅうは外れた！`
+  );
+ }
 
  return;
 }
