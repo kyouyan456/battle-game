@@ -1243,7 +1243,10 @@ body{
 
 const battleAssets={
 
- background:'southcort.png',
+backgrounds:[
+ 'southcort.png',
+ 'bey.png'
+],
 
  characters:{
 
@@ -2228,11 +2231,13 @@ const pool=
   readyが完全に終了した後なので、
   ここで初めて戦闘画面へ移動
  */
- show('battle');
+chooseBattleBackground();
 
- startBattleBgm();
+show('battle');
 
- beginTurn();
+startBattleBgm();
+
+beginTurn();
 }
 function buildOnlineBattle(players,mode){
 
@@ -3556,21 +3561,19 @@ const view=
   'battleView'
  );
 
-if(battleAssets.background){
+if(currentBattleBackground){
 
  view.style.backgroundImage=
   `linear-gradient(
      rgba(10,15,22,.08),
      rgba(10,15,22,.15)
    ),
-   url("${battleAssets.background}")`;
+   url("${currentBattleBackground}")`;
 
 }else{
 
- view.style.backgroundImage=
-  '';
+ view.style.backgroundImage='';
 }
-
 
 /* =========================
    敵HUD
