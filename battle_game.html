@@ -1465,7 +1465,7 @@ const moveBook={
  'ちーといつ':{mp:1,multi:[2,2.2,2.42,2.662,2.9282,3.22102,3.543122]},
  '投資':{special:'invest'},
  'とうし':{special:'invest'},
- 'ギャンブル':{mp:3,special:'gamble'},
+ 'ギャンブル':{mp:4,special:'gamble'},
  'ぎゃんぶる':{mp:3,special:'gamble'},
  'さっかー':{mp:1,physical:10},
  'ラップ':{mp:1,buffPhysicalNext:1.1},
@@ -5772,7 +5772,7 @@ if(m.special==='verbalDot'){
  if(m.special==='gamble'){
 
   const ok=
-   Math.random()<P.normal;
+   Math.random()<0.5;
 
   let dmg=
    ok?50:0;
