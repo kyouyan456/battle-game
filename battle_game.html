@@ -2141,6 +2141,7 @@ const pool=
   mode:appState.mode,
   teams:[],
   active:[0,0],
+   displayActive:[0,0],
   log:[],
   finished:false
  };
@@ -2452,7 +2453,8 @@ function shuffle(a){
 
 function activeF(side){
  const b=appState.battle;
- return b.teams[side][b.active[side]||0];
+ return b.teams[side][b.displayActive?.[side] ??
+b.active[side]||0];
 }
 
 function allActive(){
@@ -3361,14 +3363,20 @@ function showNextBattleMessage(){
 
  if(b){
 
-  const fighter=
- b.teams[
-  message.side
- ]?.[
-  b.active[
-   message.side
-  ]
- ];
+  const statSide=
+ message.displayStats.side ??
+ message.side;
+
+const statIndex=
+ message.displayStats.index;
+
+const fighter=
+ statIndex!==undefined &&
+ statIndex!==null
+  ? b.teams[statSide]?.[statIndex]
+  : b.teams[statSide]?.[
+      b.active[statSide] || 0
+    ];
 
   if(fighter){
 
@@ -6669,7 +6677,11 @@ if(!(p||q)){
   hp:Math.max(0,f.hp),
   mental:Math.max(0,f.mental),
   maxHp:f.maxHp,
-  maxMental:f.maxMental
+  maxMental:f.maxMental,
+
+  // 3vs3でも「誰のゲージか」を固定する
+  side:f.side,
+  index:f.index
  };
 }
 
@@ -6760,12 +6772,16 @@ function directDamage(
  'damage',
  t.side,
  'damage',
- {
+{
   hp:displayHpAfter,
   mental:displayMentalAfter,
   maxHp:t.maxHp,
-  maxMental:t.maxMental
- }
+  maxMental:t.maxMental,
+
+  // ダメージを受けた本人を記録
+  side:t.side,
+  index:t.index
+}
 );
  }
 }
