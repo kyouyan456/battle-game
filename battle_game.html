@@ -3362,11 +3362,13 @@ function showNextBattleMessage(){
  if(b){
 
   const fighter=
-   b.teams
-    .flat()
-    .find(
-     f=>f.side===message.side
-    );
+ b.teams[
+  message.side
+ ]?.[
+  b.active[
+   message.side
+  ]
+ ];
 
   if(fighter){
 
