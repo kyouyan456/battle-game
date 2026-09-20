@@ -1379,6 +1379,30 @@ sounds:{
 };
 
 /* =========================
+   現在の戦闘背景
+========================= */
+
+let currentBattleBackground='';
+
+function chooseBattleBackground(){
+
+ const list=
+  battleAssets.backgrounds||[];
+
+ if(!list.length){
+  currentBattleBackground='';
+  return;
+ }
+
+ currentBattleBackground=
+  list[
+   Math.floor(
+    Math.random()*list.length
+   )
+  ];
+}
+
+/* =========================
    戦闘BGM
 ========================= */
 const buttonSe = new Audio('sound/button.mp3');
