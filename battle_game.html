@@ -1821,12 +1821,25 @@ d.innerHTML=
     特性: ${c.traits.join(' / ')}
   </div>`;
 
-  d.onclick=()=>selectChar(i);
+ if(c.name==='いろは'){
 
-  attachTip(
-   d,
-   characterDetail(c)
-  );
+ d.style.opacity='0.45';
+ d.style.cursor='not-allowed';
+
+ d.insertAdjacentHTML(
+  'beforeend',
+  '<div class="small" style="margin-top:8px">未解禁</div>'
+ );
+
+}else{
+
+ d.onclick=()=>selectChar(i);
+}
+
+attachTip(
+ d,
+ characterDetail(c)
+);
 
   g.appendChild(d);
  });
