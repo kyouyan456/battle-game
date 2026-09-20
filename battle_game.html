@@ -1338,7 +1338,7 @@ const battleAssets={
     エゲシグ:{
    player:'characters/egesigu-b.png',
    enemy:'characters/egesigu.png',
-   icon:'characters/egesig.png'
+   icon:'characters/egesigu.png'
   }
 
  },
@@ -1482,10 +1482,18 @@ const chars=[
  'とうきゅう':{mp:3,special:'pitchAttack'},
  ...pick(['ギャンブル','べんきょう','おおごえ'])
 }},
-  {name:'ジェネシス',hp:90,mental:100,mp:6,races:['おんな','ミックス'],traits:['そうせいおう','マジレス'],moves:{
+ {name:'ジェネシス',hp:90,mental:100,mp:6,races:['おんな','ミックス'],traits:['そうせいおう','マジレス'],moves:{
  'てんちそうぞう':{mp:10,special:'creation'},
  'かいめい':{mp:8,special:'analysis'},
  ...pick(['こうおん','れいしょう','ジャンプスケア','わるだくみ','おおごえ'])
+}},
+
+{name:'エゲシグ',hp:100,mental:110,mp:6,races:['りゅうがくせい','モンゴルじん'],traits:['ゆうぼくみん','たいりくのはしゃ'],moves:{
+ 'エスニックジョーク':{special:'ethnicJoke'},
+ 'パルティアンショット':{mp:3,special:'parthianShot'},
+ 'てつはう':{mp:4,physical:30,priority:true},
+ 'てんまく':{mp:2,guard:30,priorityGuard:true},
+ ...pick(['べんきょう','さっかー','ジャンプスケア'])
 }}
 ];
 function pick(arr){
@@ -1852,23 +1860,7 @@ d.innerHTML=
     特性: ${c.traits.join(' / ')}
   </div>`;
 
-if(
- c.name==='いろは' ||
- c.name==='ながくら' ||
- c.name==='ジェネシス'
-){
- d.style.opacity='0.45';
- d.style.cursor='not-allowed';
-
- d.insertAdjacentHTML(
-  'beforeend',
-  '<div class="small" style="margin-top:8px">未解禁</div>'
- );
-
-}else{
-
- d.onclick=()=>selectChar(i);
-}
+d.onclick=()=>selectChar(i);
 
 attachTip(
  d,
@@ -1974,7 +1966,7 @@ displayMaxMental:c.mental,
   alive:true,
   guard:0,
 dodging:false,
-
+parthianDodging:false,
 nextP:1,
 nextM:1,
 
@@ -1987,6 +1979,7 @@ growthM:1,
 dualPhysical:1,
 dualMental:1,
 
+continentalStacks:0,
 veilBoost:0,
 parasiteStacks:0,
 
@@ -2105,12 +2098,8 @@ const pool=
    .map((_,i)=>i)
    .filter(
     i=>
-     !used.has(i) &&
-     chars[i].name!=='いろは' &&
-     chars[i].name!=='ながくら' &&
-     chars[i].name!=='ジェネシス'
+     !used.has(i)
    );
-
  shuffle(pool);
 
 
@@ -2558,7 +2547,25 @@ if(f.traits.includes('HG')){
   );
  }
 }
+/*
+ たいりくのはしゃ
+ 毎ターン物理攻撃力×1.2
+ 最大4回まで重複
+*/
+if(
+ f.traits.includes('たいりくのはしゃ') &&
+ (f.continentalStacks||0)<4
+){
 
+ f.continentalStacks++;
+
+ log(
+  `${f.name}のたいりくのはしゃ！ 物理攻撃力×${Math.pow(1.2,f.continentalStacks).toFixed(2)}`,
+  'buff',
+  f.side,
+  'buff'
+ );
+}
    /*
  ターン開始時MP回復
 */
@@ -4109,6 +4116,8 @@ function moveNeedsTarget(m){
  // 通常攻撃・精神攻撃・相手対象特殊技
  // えんげきもここに含まれる
  return (
+   m.special==='ethnicJoke' ||
+m.special==='parthianShot' ||
   m.physical ||
   m.mental ||
   m.special==='creation' ||
@@ -4422,6 +4431,11 @@ function prepareDefenseMove(f,m){
  if(!f||!m){
   return;
  }
+  if(
+ m.special==='parthianShot'
+){
+ f.parthianDodging=true;
+}
 
  if(m.priorityGuard){
   f.guard=
@@ -4581,13 +4595,20 @@ function priorityScore(x){
  }
 
  if(
-  x.f.traits.includes('ピッチャー') &&
-  Math.random()<P.normal
- ){
-  return 10;
- }
+ x.f.traits.includes('ピッチャー') &&
+ Math.random()<P.normal
+){
+ return 10;
+}
 
- return 0;
+if(
+ x.f.traits.includes('ゆうぼくみん') &&
+ Math.random()<P.normal
+){
+ return 10;
+}
+
+return 0;
 }
 
 function shuffleTurnGroup(group){
@@ -5028,6 +5049,86 @@ function executeMoveEffect(f,n,m,targets){
   'heal',
   statSnapshot(f)
  );
+
+ return;
+}
+  /*
+ パルティアンショット
+
+ 攻撃・防御補正を一切受けない
+ 貫通物理20
+*/
+if(m.special==='parthianShot'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ directDamage(
+  t,
+  20,
+  0,
+  'パルティアンショット'
+ );
+
+ return;
+}
+  /*
+ エスニックジョーク
+
+ 相手MPを最大2吸収
+ 相手の精神を10回復
+*/
+if(m.special==='ethnicJoke'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ const take=
+  Math.min(
+   2,
+   t.mp
+  );
+
+ t.mp-=take;
+
+ f.mp=
+  Math.min(
+   f.maxMp,
+   f.mp+take
+  );
+
+ const before=
+  t.mental;
+
+ t.mental=
+  Math.min(
+   t.maxMental,
+   t.mental+10
+  );
+
+ const healed=
+  t.mental-before;
+
+ log(
+  `${f.name}は${t.name}からMPを${take}吸収した！`
+ );
+
+ if(healed>0){
+
+  log(
+   `${t.name}の精神が${healed}回復した！`,
+   'heal',
+   t.side,
+   'heal',
+   statSnapshot(t)
+  );
+ }
 
  return;
 }
@@ -6058,6 +6159,40 @@ function applyDamage(
  if(!t||!t.alive){
   return;
  }
+  /*
+ パルティアンショット
+
+ そのターン中、
+ 敵から受ける物理攻撃を確定回避。
+
+ 精神部分は回避しない。
+*/
+if(
+ t.parthianDodging &&
+ !passive &&
+ m.physical
+){
+
+ if(m.mental){
+
+  log(
+   `${t.name}はパルティアンショットで物理攻撃を回避した！`
+  );
+
+  m={
+   ...m,
+   physical:0
+  };
+
+ }else{
+
+  log(
+   `${t.name}はパルティアンショットで物理攻撃を回避した！`
+  );
+
+  return;
+ }
+}
 
  if(
   t.dodging &&
@@ -6117,10 +6252,27 @@ function applyDamage(
 
  if(p){
 
-  p*=src.nextP||1;
-  p*=src.physicalBuff||1;
-  p*=src.growthP||1;
+ p*=src.nextP||1;
+p*=src.physicalBuff||1;
+p*=src.growthP||1;
 p*=src.dualPhysical||1;
+
+/*
+ たいりくのはしゃ
+ 最大4重複
+*/
+if(
+ src.traits.includes('たいりくのはしゃ')
+){
+ p*=
+  Math.pow(
+   1.2,
+   Math.min(
+    4,
+    src.continentalStacks||0
+   )
+  );
+}
   if(
    src.traits.includes('うんどうおんち')
   ){
@@ -6201,6 +6353,18 @@ p*=src.dualPhysical||1;
   if(src.rampage>0){
    p*=2;
   }
+   /*
+ たいりくのはしゃ
+
+ ミックスに対する物理攻撃は
+ 倍率計算後に固定+10
+*/
+if(
+ src.traits.includes('たいりくのはしゃ') &&
+ t.races.includes('ミックス')
+){
+ p+=10;
+}
  }
 
  if(q){
@@ -6731,8 +6895,8 @@ if(t){
   }
 
   f.guard=0;
-  f.dodging=false;
-
+f.dodging=false;
+f.parthianDodging=false;
 f.nextP=1;
 f.nextM=1;
 
