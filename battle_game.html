@@ -1481,7 +1481,7 @@ const chars=[
  'できんにする':{special:'giveDekin'},
  'とうきゅう':{mp:3,special:'pitchAttack'},
  ...pick(['ギャンブル','べんきょう','おおごえ'])
-}}
+}},
   {name:'ジェネシス',hp:90,mental:100,mp:6,races:['おんな','ミックス'],traits:['そうせいおう','マジレス'],moves:{
  'てんちそうぞう':{mp:10,special:'creation'},
  'かいめい':{mp:8,special:'analysis'},
@@ -6434,23 +6434,28 @@ p*=src.dualPhysical||1;
    )
   );
 
- directDamage(
+/*
+ マジレス
+ 物理・精神それぞれの被ダメージ-5
+*/
+if(t.traits.includes('マジレス')){
+ p=Math.max(0,p-5);
+ q=Math.max(0,q-5);
+}
+
+directDamage(
   t,
   p,
   q,
   src.name
- );
+);
 
- if(!(p||q)){
+if(!(p||q)){
 
  animateF(
   t,
   'flash'
  );
-}
-if(t.traits.includes('マジレス')){
- p=Math.max(0,p-5);
- q=Math.max(0,q-5);
 }
  if(
   src.traits.includes('かりめん') &&
