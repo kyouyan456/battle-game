@@ -2453,8 +2453,10 @@ function shuffle(a){
 
 function activeF(side){
  const b=appState.battle;
- return b.teams[side][b.displayActive?.[side] ??
-b.active[side]||0];
+
+ return b.teams[side]?.[
+  b.active[side] || 0
+ ] || null;
 }
 
 function allActive(){
