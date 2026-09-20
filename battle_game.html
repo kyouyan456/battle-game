@@ -2616,42 +2616,32 @@ let regen=
 */
 if(f.traits.includes('そうせいおう')){
 
+ // 毎ターンMP上限+1
  f.maxMp+=1;
 
- regen=
-  1+
-  (
+ // 通常時は必ず1～2回復
+ if((f.mpRegenLock||0)>0){
+
+  // しめあげる中だけ0～1回復
+  regen=
    Math.random()<P.normal
     ?1
-    :0
-  );
-}
-
-
-/*
- しめあげる
-
- 通常キャラは回復量1に固定。
-
- そうせいおうの場合は、
- 本来1か2回復するところから1減らされ、
- 0か1回復になる。
-*/
-if((f.mpRegenLock||0)>0){
-
- if(f.traits.includes('そうせいおう')){
-
-  regen=Math.max(
-   0,
-   regen-1
-  );
+    :0;
 
  }else{
 
-  regen=1;
+  regen=
+   Math.random()<P.normal
+    ?2
+    :1;
  }
 }
 
+else if((f.mpRegenLock||0)>0){
+
+ // 通常キャラはしめあげる中、回復量1
+ regen=1;
+}
 
 f.mp=
  Math.min(
