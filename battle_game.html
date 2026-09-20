@@ -1329,6 +1329,16 @@ const battleAssets={
    player:'characters/nagakura-b.png',
    enemy:'characters/nagakura.png',
    icon:'characters/nagakura.png'
+  },
+    ジェネシス:{
+   player:'characters/genesis-b.png',
+   enemy:'characters/genesis.png',
+   icon:'characters/genesis.png'
+  },
+    エゲシグ:{
+   player:'characters/egesigu-b.png',
+   enemy:'characters/egesigu.png',
+   icon:'characters/egesig.png'
   }
 
  },
@@ -1415,6 +1425,7 @@ const commonMoves={
 
 const moveBook={
  'れいしょう':{mp:0,mpGain:1,mental:5},
+  'ジャンプスケア':{mp:2,mental:20,tags:['しんれい','おと']},
  'しんれいげんしょう':{mp:2,mental:15,tags:['しんれい']},
  'わるだくみ':{mp:1,buffMentalNext:1.2},
  'おえかき':{mpGain:1,mental:5,tags:['いろ']},
@@ -1470,6 +1481,11 @@ const chars=[
  'できんにする':{special:'giveDekin'},
  'とうきゅう':{mp:3,special:'pitchAttack'},
  ...pick(['ギャンブル','べんきょう','おおごえ'])
+}}
+  {name:'ジェネシス',hp:90,mental:100,mp:6,races:['おんな','ミックス'],traits:['そうせいおう','マジレス'],moves:{
+ 'てんちそうぞう':{mp:10,special:'creation'},
+ 'かいめい':{mp:8,special:'analysis'},
+ ...pick(['こうおん','れいしょう','ジャンプスケア','わるだくみ','おおごえ'])
 }}
 ];
 function pick(arr){
@@ -1836,9 +1852,11 @@ d.innerHTML=
     特性: ${c.traits.join(' / ')}
   </div>`;
 
- if(c.name==='いろは'||
- c.name==='ながくら'){
-
+if(
+ c.name==='いろは' ||
+ c.name==='ながくら' ||
+ c.name==='ジェネシス'
+){
  d.style.opacity='0.45';
  d.style.cursor='not-allowed';
 
@@ -2082,14 +2100,15 @@ async function startBattle(){
  const used=
   new Set(appState.selected);
 
- const pool=
+const pool=
   chars
    .map((_,i)=>i)
    .filter(
     i=>
      !used.has(i) &&
      chars[i].name!=='いろは' &&
-     chars[i].name!=='ながくら'
+     chars[i].name!=='ながくら' &&
+     chars[i].name!=='ジェネシス'
    );
 
  shuffle(pool);
@@ -2540,35 +2559,72 @@ if(f.traits.includes('HG')){
  }
 }
 
-   let regen=
-   1+
-   (
-    f.traits.includes('めんざいたいしつ')
-     ?1
-     :0
-   );
+   /*
+ ターン開始時MP回復
+*/
+let regen=
+ 1+
+ (
+  f.traits.includes('めんざいたいしつ')
+   ?1
+   :0
+ );
 
-  /*
-   しめあげる中は
-   本来の回復量に関係なく1
-  */
-  if((f.mpRegenLock||0)>0){
-   regen=1;
-  }
+/*
+ そうせいおう
 
-  f.mp=
-   Math.min(
-    f.maxMp,
-    f.mp+regen
-   );
+ ・毎ターンMP上限+1
+ ・そのターンのMP回復量は1か2を毎回抽選
+*/
+if(f.traits.includes('そうせいおう')){
 
-  /*
-   3回のターン開始時回復を
-   1に固定したあと解除
-  */
-  if((f.mpRegenLock||0)>0){
-   f.mpRegenLock--;
-  }
+ f.maxMp+=1;
+
+ regen=
+  1+
+  (
+   Math.random()<P.normal
+    ?1
+    :0
+  );
+}
+
+
+/*
+ しめあげる
+
+ 通常キャラは回復量1に固定。
+
+ そうせいおうの場合は、
+ 本来1か2回復するところから1減らされ、
+ 0か1回復になる。
+*/
+if((f.mpRegenLock||0)>0){
+
+ if(f.traits.includes('そうせいおう')){
+
+  regen=Math.max(
+   0,
+   regen-1
+  );
+
+ }else{
+
+  regen=1;
+ }
+}
+
+
+f.mp=
+ Math.min(
+  f.maxMp,
+  f.mp+regen
+ );
+
+
+if((f.mpRegenLock||0)>0){
+ f.mpRegenLock--;
+}
   /*
  むしばダメージ
 */
@@ -4055,6 +4111,7 @@ function moveNeedsTarget(m){
  return (
   m.physical ||
   m.mental ||
+  m.special==='creation' ||
   m.multi ||
    m.special==='middleFinger' ||
 m.special==='rin' ||
@@ -5010,6 +5067,49 @@ if(m.special==='middleFinger'){
   0,
   10,
   'なかゆび自傷'
+ );
+
+ return;
+}
+  /*
+ てんちそうぞう
+ 物理50＋精神50
+ 消費MP10
+*/
+if(m.special==='creation'){
+
+ const t=targets[0];
+
+ if(!t){
+  return;
+ }
+
+ applyDamage(
+  f,
+  t,
+  {
+   physical:50,
+   mental:50
+  }
+ );
+
+ return;
+}
+  /*
+ かいめい
+ 自分のHP・メンタルを全回復
+*/
+if(m.special==='analysis'){
+
+ f.hp=f.maxHp;
+ f.mental=f.maxMental;
+
+ log(
+  `${f.name}はかいめいしてHPとメンタルを全回復した！`,
+  'heal',
+  f.side,
+  'heal',
+  statSnapshot(f)
  );
 
  return;
@@ -6348,7 +6448,10 @@ p*=src.dualPhysical||1;
   'flash'
  );
 }
-
+if(t.traits.includes('マジレス')){
+ p=Math.max(0,p-5);
+ q=Math.max(0,q-5);
+}
  if(
   src.traits.includes('かりめん') &&
   Math.random()<P.accident
