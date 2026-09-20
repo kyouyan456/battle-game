@@ -1447,7 +1447,6 @@ const chars=[
 {name:'みまや',hp:115,mental:95,mp:8,races:['うまづら','きつえんしゃ','たんきだいがく'],traits:['うわきしょう','ギャンブラー','えんきんほう','めめしい'],moves:{'あばれうま':{special:'rampage'},...pick(['たどうしょう','おおごえ','きつえん','いんしゅ','投資','ギャンブル'])}},
 {name:'ゆうま',hp:110,mental:100,mp:7,races:['ろうじん','あるちゅう'],traits:['ボケ','しらが','あかいろ','むしば','あるつはいまー'],moves:{'ペンキばくはつ':{mp:3,physical:5,mental:50,tags:['いろ'],allTargets:true},'なかゆび':{
  mp:3,
- selfMental:-10,
  special:'middleFinger'
 },'せいり':{mp:5,special:'seiri'},...pick(['いんしゅ','とうし','ぎゃんぶる','べんきょう','おえかき','さっかー'])}},
 {name:'れんたろう',hp:110,mental:90,mp:6,races:['おんがくか','fラン'],traits:['わがまま','おやのななひかり','くろいろ','じゅんあい'],moves:{'どくそう':{mp:2,physical:10,mental:20,tags:['おと']},'まいご':{mp:1,special:'lost'},'ついんぶらっく':{mp:1,multi:[10,10],tags:['いろ']},'はるか':{mp:6,special:'haruka'},...pick(['たどうしょう','おおごえ','さっかー','えんそう'])}},
@@ -4990,11 +4989,27 @@ if(m.special==='middleFinger'){
   return;
  }
 
+ /*
+  相手：
+  あらゆる攻撃・防御補正を無視して
+  物理30固定ダメージ
+ */
  directDamage(
   t,
   30,
   0,
   'なかゆび'
+ );
+
+ /*
+  自分：
+  精神10ダメージ
+ */
+ directDamage(
+  f,
+  0,
+  10,
+  'なかゆび自傷'
  );
 
  return;
