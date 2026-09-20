@@ -2907,14 +2907,14 @@ function applyGlobalStart(){
    for(const w of women){
 
     const take=
-     Math.min(5,w.mp);
+     Math.min(7,w.hp);
 
-    w.mp-=take;
+    w.hp-=take;
 
-    src.mp=
+    src.hp=
      Math.min(
-      src.maxMp,
-      src.mp+take
+      src.maxHp,
+      src.hp+take
      );
    }
 
