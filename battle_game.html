@@ -1828,7 +1828,8 @@ d.innerHTML=
     特性: ${c.traits.join(' / ')}
   </div>`;
 
- if(c.name==='いろは'){
+ if(c.name==='いろは'||
+ c.name==='ながくら'){
 
  d.style.opacity='0.45';
  d.style.cursor='not-allowed';
@@ -2076,7 +2077,12 @@ async function startBattle(){
  const pool=
   chars
    .map((_,i)=>i)
-   .filter(i=>!used.has(i));
+   .filter(
+    i=>
+     !used.has(i) &&
+     chars[i].name!=='いろは' &&
+     chars[i].name!=='ながくら'
+   );
 
  shuffle(pool);
 
